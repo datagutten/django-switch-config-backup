@@ -15,9 +15,8 @@ class HPTelnet(Telnet):
 
     def login(self, ip, username, password, enable_password=None):
         try:
-            print('Connecting to %s' % ip)
-            tn = telnetlib.Telnet(ip, timeout=5)
-            self.connection = tn
+            self.connect(ip)
+            tn = self.connection
             self.connection.write(b"\n")
             self.connection.write(b"\n")
             # self.connection.write(b"\n")
@@ -58,7 +57,5 @@ class HPTelnet(Telnet):
             self.output_log.write(e.payload + "\n-Unexpected response--\n")
             if e.payload.find('#') == -1 and e.payload.find('>') == -1:
                 raise e
-        except socket.timeout:
-            raise TimeoutError('Timout connecting to %s' % ip)
 
         self.output_log.close()

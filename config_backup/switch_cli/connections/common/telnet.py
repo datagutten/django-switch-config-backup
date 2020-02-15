@@ -1,9 +1,20 @@
+import socket
+import telnetlib
+
 from .SwitchCli import SwitchCli
 from ..exceptions import UnexpectedResponse
 
 
 class Telnet(SwitchCli):
     connection_type = 'telnet'
+
+    def connect(self, ip, username=None, password=None):
+        try:
+            print('Connecting to %s' % ip)
+            tn = telnetlib.Telnet(ip, timeout=5)
+        except socket.timeout:
+            raise TimeoutError('Timout connecting to %s' % ip)
+        self.connection = tn
 
     def command(self, cmd, expected_response=None, read_until=None, timeout=2):
         # print('Running command %s' % cmd)

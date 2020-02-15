@@ -1,4 +1,3 @@
-import telnetlib
 import socket
 
 from ..exceptions import UnexpectedResponse
@@ -13,8 +12,8 @@ class CiscoTelnet(Telnet):
         if not enable_password:
             enable_password = password
         try:
-            tn = telnetlib.Telnet(ip, timeout=5)
-            self.connection = tn
+            self.connect(ip)
+            tn = self.connection
             self.connection.write(b"\n")
             output = tn.read_until(b'Password:', 2).decode('utf-8')
 
