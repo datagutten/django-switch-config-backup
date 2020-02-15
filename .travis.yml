@@ -1,3 +1,7 @@
+dist: xenial
+language: python
+script:
+- python3 setup.py install
 before_deploy:
 - git stash --all
 - sed -i "s/@@version@@/${TRAVIS_TAG}/g" setup.py
