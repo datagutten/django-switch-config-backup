@@ -16,6 +16,7 @@ class Command(BaseCommand):
         parser.add_argument('switch', nargs='+', type=str)
 
     def handle(self, *args, **cmd_options):
+        backup_success = False
         git = Git(backup.local_path)
         if not cmd_options['switch'][0] == 'all':
             switches = Switch.objects.filter(name=cmd_options['switch'][0])
@@ -38,10 +39,14 @@ class Command(BaseCommand):
                                            options.username,
                                            options.password,
                                            options.enable_password)
-            except (TimeoutError, backup.BackupFailed, ValueError) as e:
+            except (TimeoutError, ValueError) as e:
                 print(e)
                 continue
-
+            except backup.BackupFailed as e:
+                print('Backup failed: ' + str(e))
+                continue
+            backup_success = True
             git.add(local_file)
 
-        git.commit('Backup ' + cmd_options['switch'][0])
+        if backup_success:
+            git.commit('Backup ' + cmd_options['switch'][0])
