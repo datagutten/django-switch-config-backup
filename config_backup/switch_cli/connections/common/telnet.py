@@ -1,4 +1,4 @@
-from ..SwitchCli import SwitchCli
+from .SwitchCli import SwitchCli
 from ..exceptions import UnexpectedResponse
 
 
