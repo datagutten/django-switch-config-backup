@@ -28,8 +28,8 @@ def backup_options(switch):
     return options
 
 
-# class ConfigBackup:
 def connect(switch, connection_type='Telnet'):
-    connection = get_connection(switch.type, connection_type)
+    connection = get_connection(switch.type, connection_type)()
     options = backup_options(switch)
-    connection.login(options.ip, options.username, options.password)
+    connection.login(switch.ip, options.username,
+                     options.password, options.enable_password)
