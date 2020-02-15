@@ -1,4 +1,4 @@
 django
 paramiko
 scp
-switchinfo
+switchinfo>=1.2
