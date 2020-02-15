@@ -1,9 +1,7 @@
-import socket
-import telnetlib
 from time import sleep
 
-from ..exceptions import UnexpectedResponse
 from ..common.telnet import Telnet
+from ..exceptions import UnexpectedResponse
 from ...utils import strip_output
 
 
@@ -22,7 +20,8 @@ class HPTelnet(Telnet):
             # self.connection.write(b"\n")
             sleep(1)
 
-            output = tn.read_until(b'Press any key to continue', 2).decode('utf-8')
+            output = tn.read_until(b'Press any key to continue',
+                                   2).decode('utf-8')
             output += tn.read_until(b':', 2).decode('utf-8')
             # output += tn.read_all().decode('utf-8')
             # matches = re.search(r'(.+)$', output)
@@ -34,20 +33,24 @@ class HPTelnet(Telnet):
             if check[-1] == '>':
                 output = self.command('enable', 'Username:')
 
-            if output.find('Press any key to continue') > -1:  # Any key expected
+            # Any key expected
+            if output.find('Press any key to continue') > -1:
                 output = self.command('a', 'Username:')
-                self.output_log.write(output + "\n-Any key response, username expected--\n")
+                self.output_log.write(
+                    output + "\n-Any key response, username expected--\n")
                 sleep(1)
 
             if output.find('Username:') > -1:
                 sleep(1)
                 output = self.command(username, 'Password:')
-                self.output_log.write(output + "\n-Username response, password expected--\n")
+                self.output_log.write(
+                    output + "\n-Username response, password expected--\n")
                 sleep(1)
 
             if output.find('Password:') > -1:
                 output = self.command(password, '#')
-                self.output_log.write(output + "\n-Password response, # expected--\n")
+                self.output_log.write(
+                    output + "\n-Password response, # expected--\n")
                 sleep(1)
 
             if output.find('#') == -1 and output.find('>') == -1:
