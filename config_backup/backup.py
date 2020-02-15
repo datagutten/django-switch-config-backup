@@ -2,6 +2,9 @@ import subprocess
 import os
 from django.conf import settings
 
+from .switch_cli.connections.exceptions import UnexpectedResponse
+from .switch_cli.get_connection import get_connection
+
 local_path = settings.BACKUP_PATH
 
 
@@ -39,7 +42,7 @@ def backup(switch, connection_type, username, password, enable_password=None):
     if connection_type == 'SFTP' or connection_type == 'SCP':
         if switch.type == 'Cisco':
             remote_file = 'running-config'
-        elif switch.type == 'Aruba':
+        elif switch.type == 'Aruba' or switch.type == 'ProCurve':
             remote_file = '/cfg/running-config'
         elif switch.type == 'Extreme':
             remote_file = '/config/primary.cfg'
@@ -65,25 +68,14 @@ def backup(switch, connection_type, username, password, enable_password=None):
         except paramiko.ssh_exception.SSHException as e:
             raise BackupFailed(e)
     else:  # CLI based backup
-        if connection_type == 'Telnet':
-            if switch.type == 'Cisco':
-                from config_backup.switch_cli.cisco_telnet import CiscoTelnet, UnexpectedResponse
-                cli = CiscoTelnet()
-            else:
-                raise ValueError(
-                    'CLI backup using %s is not supported for %s' % (
-                        connection_type,
-                        switch.type)
-                )
-        else:
-            raise ValueError('CLI backup not supported using %s' % connection_type)
+        cli = get_connection(switch.type, connection_type)()
         try:
             cli.login(switch.ip, username, password, enable_password)
-        except OSError as e:
+        except (OSError, ConnectionError) as e:
             raise BackupFailed(e)
 
         if switch.type == 'Cisco':
-            cli.command('copy running-config %s/%s' % (settings.TFTP_URL, switch.name),
+            cli.command('copy running-config %s/%s' % (settings.BACKUP_URL, switch.name),
                         'Address or name of remote host', '?')
             cli.command('\n', 'Destination filename', '?')
             try:
