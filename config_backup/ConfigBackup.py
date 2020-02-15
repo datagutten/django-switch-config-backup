@@ -17,6 +17,8 @@ def backup_options(switch):
             options.username = switch_options.username
         if switch_options.password:
             options.password = switch_options.password
+        if switch_options.enable_password:
+            options.enable_password = switch_options.enable_password
         if switch_options.connection_type:
             options.connection_type = switch_options.connection_type
     except SwitchBackupOption.DoesNotExist:
