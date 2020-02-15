@@ -12,7 +12,10 @@ class SSH(SwitchCli):
     def connect(self, ip, username=None, password=None):
         self.connection = paramiko.SSHClient()
         self.connection.set_missing_host_key_policy(paramiko.AutoAddPolicy)
-        self.connection.connect(hostname=ip, username=username, password=password, look_for_keys=False)
+        self.connection.connect(hostname=ip, username=username,
+                                password=password,
+                                look_for_keys=False,
+                                allow_agent=False)
         self.connection = self.connection.invoke_shell()
 
     def command(self, cmd, expected_response=None, timeout=2):
