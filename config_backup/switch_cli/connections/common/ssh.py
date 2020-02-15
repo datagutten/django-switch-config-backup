@@ -9,7 +9,7 @@ from ..exceptions import UnexpectedResponse
 class SSH(SwitchCli):
     connection_type = 'SSH'
 
-    def connect(self, ip, username, password):
+    def connect(self, ip, username=None, password=None):
         self.connection = paramiko.SSHClient()
         self.connection.set_missing_host_key_policy(paramiko.AutoAddPolicy)
         self.connection.connect(hostname=ip, username=username, password=password, look_for_keys=False)
