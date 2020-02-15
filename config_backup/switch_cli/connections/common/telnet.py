@@ -23,7 +23,8 @@ class Telnet(SwitchCli):
         if expected_response:
             if not read_until:
                 read_until = expected_response
-            response = self.connection.read_until(read_until.encode('utf-8'), timeout=timeout)
+            response = self.connection.read_until(read_until.encode('utf-8'),
+                                                  timeout=timeout)
             output = response.decode('utf-8')
             if output.find(expected_response) == -1:
                 raise UnexpectedResponse(

@@ -10,4 +10,3 @@ class SwitchCli:
 
     def login(self, ip, username, password, enable_password):
         pass
-

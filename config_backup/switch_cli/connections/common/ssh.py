@@ -25,14 +25,6 @@ class SSH(SwitchCli):
 
         out = self.connection.recv(9999)
         output = out.decode("ascii")
-        print(output)
-
-
-        # stdin, stdout, stderr = self.connection.exec_command(cmd)
-        # print(stdout)
-        # output = stdout.read().decode("utf-8")
-        # print(output)
-        # print(output.find(expected_response))
 
         if expected_response and output.find(expected_response) == -1:
             raise UnexpectedResponse(
@@ -40,4 +32,3 @@ class SSH(SwitchCli):
                 (output, expected_response), output)
         else:
             return output
-
