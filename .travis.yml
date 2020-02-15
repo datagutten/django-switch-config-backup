@@ -1,9 +1,9 @@
 dist: xenial
 language: python
 addons:
- apt:
-  packages:
-   - libsnmp-dev
+  apt:
+    packages:
+    - libsnmp-dev
 script:
 - python3 setup.py install
 before_deploy:
@@ -14,7 +14,7 @@ deploy:
   provider: pypi
   user: datagutten
   password:
-    secure: U9dp6nNbRg8kGEizl6qep1j3UT+3wO+PTqR0OJ7DmTFJffOBMNsSPbdPlVZyT0EFtGU0Da02wopCOsfzWLDHZQdBCGi35mrJE0Nitok0MjPx7uA6f8JcAxgAqc9fgtFykqmwRb3eej22VyB8y1tjl/+ur3/o8myRCiqF5TLfWXPbndZ1WgQPjD6nh9Ct+UsHyBb5VxjojrA9UEZ1tvKKgIJIYR0zKfb/v7KnL6dodAuM77L7daWbQ9tvQjPJd3WmOfsWXGdGxs+iDnvUPLLbnfVVWaXUdY1zvVWX3T5klHJf9U2DhUbOwbO2F343xW+8Z3Mc5U225QkM0EGNLVqjWp1vWGSAvB9q57OO7G8cPeAb5DK0gkQrifr+8Ku7iJakJMCvmjHebiEHcpCb2lma/HEGu4l95Qi2SRHt9GRTBgc1H7BO7PKZL8LIFClY9LfOlHOTxFFGELNlMNcd12zb/H1+C0OiFRtlcByR5pMtBO0Zj31QR1YYOo40GxxX7yMtQ/4cOQA1+bwgdpIfZdgtHUhXABmBZOAn9bFPGQQcDkgElUAapVnI/5bNFW11xqrvAr9ujAAoR896KZwz+NYsxBB2jt1xHbDYlN6sVe6+n1kq8UAutDxdHRmCaCVX7VXJyLrfsXbIfbd0CE2+eSaQjWZJJPv0XAPy4H1KwT3xNbs=
+    secure: Hk8gM2GDxyUQXG8Ep2sDNamKUAAGlqZTYei1JuhFgXHGK+P3fo3hVmriEeYSj8aKH/5kn+rRgQW4a6bG2ygdmk41T2kRJyg5D3y5FiuTKlzSWMMcqheo5JPyET/1hg3oJiPjdScKOnVMy53ldkZXm8sf6nd39RXhfFrayJpj74ryyuNVdTLfNHXK0gtYvC1VviBFygc3ScvTG6EYswS7Bz606tx4fjGrwnZEoAG8V2VLbKgvNAojjolxlRvYgA8QXouMHzGQQm6PTMlYAZp3jZGoVyh2ZqALBXnVij1/AItKhbdF1GlAuAQ1Rino0QO83oc4uxbvp0n/ERVMAdgaHRjCAGNn9HnkJCA7FDSW9PISzVSLgYd7j73G5N5CYwoMkoZv6HNK7CiRNchHtHWhArek6+T77yDOXe1KDDm3QpLsVMkmLIE75VI7c/7My+sI6NxE5WDcgT2OaIvtquTx0yZiMfuUBBpee5Nd1gsDQlR9AqmoyiGpQlfOznH0ViuTPhJxTEacMJy4GHpuqJGyi5bjg/mdj8MwKIQXb7ggG6u3SIT8wntTIcD3bm0QZGKe6JzmEBbLA5pnobFwiEmoZCR3MmtOvHPh56Do9fpjX0c1rIuBQok049p1ia5CYO3uaf5dK2opkWLyWQVVYg1PMij587iBEEeEvSbuF/Yf0wg=
   on:
     tags: true
   skip_existing: true
