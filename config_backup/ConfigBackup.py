@@ -33,3 +33,4 @@ def connect(switch, connection_type='Telnet'):
     options = backup_options(switch)
     connection.login(switch.ip, options.username,
                      options.password, options.enable_password)
+    return connection
