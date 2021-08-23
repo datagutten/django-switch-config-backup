@@ -1,7 +1,6 @@
 import datetime
 
-from django.core.management.base import BaseCommand
-from switchinfo.models import Switch
+from switchinfo.management.commands import SwitchBaseCommand
 
 from config_backup.ConfigBackup import backup_options
 from config_backup.switch_cli.get_connection import get_connection
@@ -9,21 +8,12 @@ from config_backup.switch_cli.get_connection import get_connection
 now = datetime.datetime.now()
 
 
-class Command(BaseCommand):
+class Command(SwitchBaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('switch', nargs='+', type=str)
 
     def handle(self, *args, **cmd_options):
-        if not cmd_options['switch'][0] == 'all':
-            switches = Switch.objects.filter(name=cmd_options['switch'][0])
-            print(switches)
-        else:
-            switches = Switch.objects.all()
-        if not switches:
-            print('No switches found')
-            return
-
-        for switch in switches:
+        for switch in self.handle_arguments(cmd_options):
 
             options = backup_options(switch)
             if options is None:

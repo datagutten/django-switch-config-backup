@@ -1,7 +1,6 @@
 import datetime
 
-
-from django.core.management.base import BaseCommand
+from switchinfo.management.commands import SwitchBaseCommand
 
 from switchinfo.models import Switch
 from config_backup.git import Git
@@ -11,23 +10,12 @@ from config_backup.ConfigBackup import backup_options
 now = datetime.datetime.now()
 
 
-class Command(BaseCommand):
-    def add_arguments(self, parser):
-        parser.add_argument('switch', nargs='+', type=str)
-
+class Command(SwitchBaseCommand):
     def handle(self, *args, **cmd_options):
         backup_success = False
         git = Git(backup.local_path)
-        if not cmd_options['switch'][0] == 'all':
-            switches = Switch.objects.filter(name=cmd_options['switch'][0])
-            print(switches)
-        else:
-            switches = Switch.objects.all()
-        if not switches:
-            print('No switches found')
-            return
-
-        for switch in switches:
+        switch: Switch
+        for switch in self.handle_arguments(cmd_options):
 
             options = backup_options(switch)
             if options is None:
