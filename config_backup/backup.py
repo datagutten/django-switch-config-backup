@@ -66,7 +66,8 @@ def backup(switch, connection_type, username, password, enable_password=None):
                 scp = SCPClient(t)
                 scp.get(remote_file, local_file)
 
-        except (paramiko.ssh_exception.SSHException, SCPException) as e:
+        except (paramiko.ssh_exception.SSHException,
+                SCPException, EOFError) as e:
             raise BackupFailed(e)
     else:  # CLI based backup
         cli = get_connection(switch.type, connection_type)()
