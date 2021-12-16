@@ -1,12 +1,13 @@
 import socket
 import telnetlib
 
-from .SwitchCli import SwitchCli
+from .Connection import Connection
 from ..exceptions import UnexpectedResponse
 
 
-class Telnet(SwitchCli):
+class Telnet(Connection):
     connection_type = 'telnet'
+    connection: telnetlib.Telnet
 
     def connect(self, ip, username=None, password=None):
         try:

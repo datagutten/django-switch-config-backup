@@ -2,11 +2,12 @@ import time
 
 import paramiko
 
-from .SwitchCli import SwitchCli
+from .Connection import Connection
 from ..exceptions import UnexpectedResponse
 
 
-class SSH(SwitchCli):
+class SSH(Connection):
+    connection: paramiko.Channel
     connection_type = 'SSH'
 
     def connect(self, ip, username=None, password=None):
