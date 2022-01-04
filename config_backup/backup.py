@@ -1,17 +1,14 @@
-import subprocess
 import os
-from django.conf import settings
-from scp import SCPException
+import subprocess
 
+from django.conf import settings
+from switchinfo.models import Switch
+
+from .ConfigBackup import connect_cli
+from .exceptions import BackupFailed
 from .switch_cli.connections.exceptions import UnexpectedResponse
-from .switch_cli.get_connection import get_connection
 
 local_path = settings.BACKUP_PATH
-
-
-class BackupFailed(Exception):
-    """Exception raised when backup fails"""
-    pass
 
 
 def backup_file(switch):
@@ -23,7 +20,7 @@ def backup_file(switch):
     return settings.BACKUP_PATH + '/' + switch.name
 
 
-def has_backup(switch):
+def has_backup(switch: Switch):
     """
     Check if switch has backup
     :param switchinfo.models.Switch switch:
@@ -35,25 +32,32 @@ def has_backup(switch):
         return False
 
 
-def backup(switch, connection_type, username, password, enable_password=None):
+def remote_file_name(switch_type):
+    if switch_type == 'Cisco':
+        return 'running-config'
+    elif switch_type == 'Aruba' or switch_type == 'ProCurve':
+        return '/cfg/running-config'
+    elif switch_type == 'Extreme':
+        return '/config/primary.cfg'
+    elif switch_type == 'HP':
+        return 'startup.cfg'
+    elif switch_type == '3Com':
+        return '3comoscfg.cfg'
+    else:
+        raise BackupFailed(
+            'File backup not supported for switch type: %s' % switch_type)
 
+
+def backup(switch, connection_type, username, password, enable_password=None):
     print('Backing up %s switch %s using %s' % (switch.type, switch.name, connection_type))
     local_file = backup_file(switch)
+    if connection_type not in ['SCP', 'SFTP', 'Telnet', 'SSH']:
+        raise BackupFailed('Invalid connection type: %s' % connection_type)
 
     if connection_type == 'SFTP' or connection_type == 'SCP':
-        if switch.type == 'Cisco':
-            remote_file = 'running-config'
-        elif switch.type == 'Aruba' or switch.type == 'ProCurve':
-            remote_file = '/cfg/running-config'
-        elif switch.type == 'Extreme':
-            remote_file = '/config/primary.cfg'
-            local_file += '.xml'
-        elif switch.type == 'HP':
-            remote_file = 'startup.cfg'
-        else:
-            raise ValueError('%s backup not supported for switch type: %s' % (connection_type, switch.type))
-
         import paramiko
+        remote_file = remote_file_name(switch.type)
+
         try:
             t = paramiko.Transport((switch.ip, 22))
             t.connect(username=username, password=password)
@@ -66,34 +70,33 @@ def backup(switch, connection_type, username, password, enable_password=None):
                 scp = SCPClient(t)
                 scp.get(remote_file, local_file)
 
-        except (paramiko.ssh_exception.SSHException,
-                SCPException, EOFError) as e:
-            raise BackupFailed(e)
+        except Exception as e:
+            if str(e) == '':
+                raise BackupFailed(str(type(e)))
+            else:
+                raise BackupFailed(e)
     else:  # CLI based backup
-        cli = get_connection(switch.type, connection_type)()
         try:
-            cli.login(switch.ip, username, password, enable_password)
-        except (OSError, ConnectionError) as e:
-            raise BackupFailed(e)
+            cli = connect_cli(switch)
+        except UnexpectedResponse as e:
+            print(e, e.payload.decode('utf-8'))
+            raise e
 
-        if switch.type == 'Cisco':
-            cli.command('copy running-config %s/%s' % (settings.BACKUP_URL, switch.name),
-                        'Address or name of remote host', '?')
-            cli.command('\n', 'Destination filename', '?')
-            try:
-                cli.command('\n', '#')
-            except UnexpectedResponse as e:
-                if e.payload.strip() == '':
-                    from time import sleep
-                    sleep(3)
-                else:
-                    print(ord(e.payload.strip()[0]))
-                    raise e
+        if not hasattr(cli, 'backup') and not hasattr(cli, 'backup_copy'):
+            print(type(cli))
+            raise BackupFailed('CLI based backup not supported for %s' % switch.type)
+
+        if hasattr(cli, 'backup'):
+            config = cli.backup()
+            with open(local_file, 'wb') as fp:
+                fp.write(config)
+        elif hasattr(cli, 'backup_copy'):
+            url = '%s/%s' % (settings.BACKUP_URL, switch.name)
+            cli.backup_copy(url)
+
             if os.path.exists(local_file):
                 subprocess.check_output(['sed', '-i', '/ntp clock-period.*/d', local_file])
             else:
                 raise BackupFailed('Switch did not upload config to %s' % local_file)
 
-        else:
-            raise ValueError('CLI based backup not supported for %s' % switch.type)
     return local_file
