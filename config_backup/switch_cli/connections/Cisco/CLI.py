@@ -1,5 +1,6 @@
 import re
 
+from config_backup.exceptions import BackupFailed
 from ..common import SwitchCli
 from ..exceptions import UnexpectedResponse
 
@@ -34,6 +35,10 @@ class CiscoCLI(SwitchCli):
             if not self.prompt:
                 raise UnexpectedResponse('Unexpected initial output', output)
 
+        if self.prompt[-1] == '>':
+            self.command(b'enable', b'Password:')
+            output = self.command(enable_password, b'#')
+
         self.prompt = get_prompt(output)
 
     def backup(self):
@@ -54,6 +59,9 @@ class CiscoCLI(SwitchCli):
         return response
 
     def backup_copy(self, url):
+        if self.prompt[-1] != '#':
+            raise BackupFailed('Not write enabled')
+
         self.command('copy running-config %s' % url,
                      b'Address or name of remote host', b'?')
         self.command(b'\n', b'Destination filename', b'?')
