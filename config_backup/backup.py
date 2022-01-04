@@ -86,11 +86,7 @@ def backup(switch, connection_type, username, password, enable_password=None):
             print(type(cli))
             raise BackupFailed('CLI based backup not supported for %s' % switch.type)
 
-        if hasattr(cli, 'backup'):
-            config = cli.backup()
-            with open(local_file, 'wb') as fp:
-                fp.write(config)
-        elif hasattr(cli, 'backup_copy'):
+        if hasattr(cli, 'backup_copy'):
             url = '%s/%s' % (settings.BACKUP_URL, switch.name)
             cli.backup_copy(url)
 
@@ -98,5 +94,9 @@ def backup(switch, connection_type, username, password, enable_password=None):
                 subprocess.check_output(['sed', '-i', '/ntp clock-period.*/d', local_file])
             else:
                 raise BackupFailed('Switch did not upload config to %s' % local_file)
+        elif hasattr(cli, 'backup'):
+            config = cli.backup()
+            with open(local_file, 'wb') as fp:
+                fp.write(config)
 
     return local_file
