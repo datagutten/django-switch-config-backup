@@ -56,6 +56,7 @@ class CiscoCLI(SwitchCli):
             print('Prompt find', response.decode('utf-8').find(self.prompt))
 
         response = re.sub(rb'\s--More--\s\x08+\s+\x08+', b'', response)
+        response = response.replace(b'\r', b'')
         return response
 
     def backup_copy(self, url):
