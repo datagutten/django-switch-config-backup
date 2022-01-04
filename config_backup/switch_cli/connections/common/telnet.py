@@ -2,7 +2,6 @@ import socket
 import telnetlib
 
 from .Connection import Connection
-from ..exceptions import UnexpectedResponse
 
 
 class Telnet(Connection):
@@ -11,27 +10,24 @@ class Telnet(Connection):
 
     def connect(self, ip, username=None, password=None):
         try:
-            print('Connecting to %s' % ip)
+            print('Connecting to %s using telnet' % ip)
             tn = telnetlib.Telnet(ip, timeout=5)
         except socket.timeout:
             raise TimeoutError('Timout connecting to %s' % ip)
         self.connection = tn
 
-    def command(self, cmd, expected_response=None, read_until=None, timeout=2):
-        # print('Running command %s' % cmd)
-        self.connection.write(cmd.encode('utf-8'))
-        self.connection.write(b"\n")
-        if expected_response:
-            if not read_until:
-                read_until = expected_response
-            response = self.connection.read_until(read_until.encode('utf-8'),
-                                                  timeout=timeout)
-            output = response.decode('utf-8')
-            if output.find(expected_response) == -1:
-                raise UnexpectedResponse(
-                    'Unexpected response: "%s", expected "%s"' %
-                    (output, expected_response), output)
-        else:
-            return self.connection.read_very_eager().decode('utf-8')
+    def read(self) -> bytes:
+        return self.connection.read_very_eager()
 
-        return output
+    def read_until(self, match: bytes) -> bytes:
+        return self.connection.read_until(match, self.timeout)
+
+    def command(self, cmd: bytes, read_until: bytes = None,
+                timeout=2) -> bytes:
+        # print('Running telnet command %s, expecting %s' % (cmd, expected_response))
+        self.connection.write(cmd)
+
+        if read_until:
+            return self.read_until(read_until)
+        else:
+            return self.read_wait()

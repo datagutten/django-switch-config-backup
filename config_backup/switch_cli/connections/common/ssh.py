@@ -1,4 +1,4 @@
-import time
+import socket
 
 import paramiko
 
@@ -19,20 +19,36 @@ class SSH(Connection):
                            look_for_keys=False,
                            allow_agent=False)
             self.connection = client.invoke_shell()
+            self.connection.settimeout(self.timeout)
         except paramiko.SSHException as e:
             raise ConnectionError(e)
+        except paramiko.ssh_exception.NoValidConnectionsError as e:
+            raise ConnectionError(e)
 
-    def command(self, cmd, expected_response=None, timeout=2):
-        self.connection.send(cmd + '\n')
-        while not self.connection.recv_ready():
-            time.sleep(3)
+    def set_timeout(self, timeout: int):
+        self.timeout = timeout
+        self.connection.settimeout(timeout)
 
-        out = self.connection.recv(9999)
-        output = out.decode("ascii")
+    def read(self) -> bytes:
+        # print('ready', self.connection.recv_ready())
+        try:
+            return self.connection.recv(9999)
+        except socket.timeout as e:
+            raise TimeoutError from e
 
-        if expected_response and output.find(expected_response) == -1:
-            raise UnexpectedResponse(
-                'Unexpected response: "%s", expected "%s"' %
-                (output, expected_response), output)
-        else:
-            return output
+    def ready(self) -> bool:
+        return self.connection.recv_ready()
+
+    def read_wait(self) -> bytes:
+        response = b''
+        while not self.ready():
+            try:
+                response += self.read()
+            except TimeoutError:
+                break
+        return response
+
+    def command(self, command, read_until=None, timeout=2) -> bytes:
+        self.connection.send(command)
+        self.set_timeout(timeout)
+        return self.read_wait()
