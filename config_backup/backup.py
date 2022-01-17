@@ -90,13 +90,12 @@ def backup(switch, connection_type, username, password, enable_password=None):
             url = '%s/%s' % (settings.BACKUP_URL, switch.name)
             cli.backup_copy(url)
 
-            if os.path.exists(local_file):
-                subprocess.check_output(['sed', '-i', '/ntp clock-period.*/d', local_file])
-            else:
+            if not os.path.exists(local_file):
                 raise BackupFailed('Switch did not upload config to %s' % local_file)
         elif hasattr(cli, 'backup'):
             config = cli.backup()
             with open(local_file, 'wb') as fp:
                 fp.write(config)
-
+    if switch.type == 'Cisco':
+        subprocess.run(['sed', '-i', '/ntp clock-period.*/d', local_file])
     return local_file
