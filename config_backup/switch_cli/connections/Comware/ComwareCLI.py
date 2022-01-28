@@ -11,6 +11,13 @@ def get_prompt(response: bytes):
     return matches.group(1)
 
 
+def normalize_interface(interface: str):
+    matches = re.search(r'(\w+Ethernet)\s?([0-9/]+)', interface)
+    if not matches:
+        raise UnexpectedResponse('Unable to parse interface name')
+    return matches.group(1) + matches.group(2)
+
+
 class ComwareCLI(common.SwitchCli):
     def command(self, command: str, expected_response=None, read_until=None, timeout=2,
                 decode=False):
@@ -104,3 +111,15 @@ class ComwareCLI(common.SwitchCli):
 
     def ntp_server(self, address):
         self.command('ntp-service unicast-peer %s' % address)
+
+    def poe_off(self, interface):
+        response = self.command('interface %s' % interface, 'Ethernet')
+        self.prompt = get_prompt(response)
+        self.command('undo poe enable')
+
+    def poe_on(self, interface):
+        interface = normalize_interface(interface)
+        if interface not in self.prompt:
+            response = self.command('interface %s' % interface, 'Ethernet')
+            self.prompt = get_prompt(response)
+        self.command('poe enable')

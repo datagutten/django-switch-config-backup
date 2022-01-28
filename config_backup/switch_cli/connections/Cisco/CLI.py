@@ -87,3 +87,13 @@ class CiscoCLI(SwitchCli):
         self.command('ip scp server enable', '(config)#')
         self.command('exit', '#')
         self.command('write memory', 'Building configuration')
+
+    def poe_on(self, interface):
+        self.command('conf t', '(config)')
+        self.command('interface %s' % interface, '(config-if)')
+        self.command('power inline auto', '(config-if)')
+
+    def poe_off(self, interface):
+        self.command('conf t', '(config)')
+        self.command('interface %s' % interface, '(config-if)')
+        self.command('power inline never', '(config-if)')
