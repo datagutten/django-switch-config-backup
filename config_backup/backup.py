@@ -86,7 +86,7 @@ def backup(switch, connection_type, username, password, enable_password=None):
             print(type(cli))
             raise BackupFailed('CLI based backup not supported for %s' % switch.type)
 
-        if hasattr(cli, 'backup_copy'):
+        if hasattr(cli, 'backup_copy') and hasattr(settings, 'BACKUP_URL'):
             url = '%s/%s' % (settings.BACKUP_URL, switch.name)
             cli.backup_copy(url)
 
