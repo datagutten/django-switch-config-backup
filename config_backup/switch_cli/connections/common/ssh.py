@@ -3,7 +3,7 @@ import socket
 import paramiko
 
 from .Connection import Connection
-from ..exceptions import UnexpectedResponse
+from ..exceptions import CLIConnectionError
 
 
 class SSH(Connection):
@@ -21,9 +21,9 @@ class SSH(Connection):
             self.connection = client.invoke_shell()
             self.connection.settimeout(self.timeout)
         except paramiko.SSHException as e:
-            raise ConnectionError(e)
+            raise CLIConnectionError(e)
         except paramiko.ssh_exception.NoValidConnectionsError as e:
-            raise ConnectionError(e)
+            raise CLIConnectionError(e)
 
     def set_timeout(self, timeout: int):
         self.timeout = timeout

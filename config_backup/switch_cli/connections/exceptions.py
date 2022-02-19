@@ -1,4 +1,8 @@
-class UnexpectedResponse(Exception):
+class CLIException(Exception):
+    pass
+
+
+class UnexpectedResponse(CLIException):
     """Device returned unexpected response"""
     payload: bytes = b''
 
@@ -16,5 +20,5 @@ class InvalidCommand(UnexpectedResponse):
     #     super(InvalidCommand, self).__init__('Invalid command: %s' % command)
 
 
-class CLIConnectionError(Exception):
+class CLIConnectionError(CLIException):
     pass

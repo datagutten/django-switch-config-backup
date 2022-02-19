@@ -7,6 +7,7 @@ import config_backup.exceptions
 from config_backup import backup
 from config_backup.ConfigBackup import backup_options
 from config_backup.git import Git
+from switch_cli.connections.exceptions import CLIException
 
 now = datetime.datetime.now()
 
@@ -30,6 +31,10 @@ class Command(SwitchBaseCommand):
             except config_backup.exceptions.BackupFailed as e:
                 print('Backup failed: ' + str(e))
                 continue
+            except CLIException as e:
+                print('CLI error: %s' % e)
+                continue
+
             backup_success = True
             git.add(local_file)
 
