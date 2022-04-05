@@ -82,18 +82,24 @@ class CiscoCLI(SwitchCli):
                 raise e
 
     def enable_scp(self):
-        self.command('configure terminal', '(config)#')
-        self.command('aaa authorization exec default local', '(config)#')
-        self.command('ip scp server enable', '(config)#')
-        self.command('exit', '#')
-        self.command('write memory', 'Building configuration')
+        output = self.prompt
+        output += self.command('configure terminal', '(config)#')
+        output += self.command('aaa authorization exec default local', '(config)#')
+        output += self.command('ip scp server enable', '(config)#')
+        output += self.command('exit', '#')
+        output += self.command('write memory', 'Building configuration')
+        return output
 
     def poe_on(self, interface):
-        self.command('conf t', '(config)')
-        self.command('interface %s' % interface, '(config-if)')
-        self.command('power inline auto', '(config-if)')
+        output = self.prompt
+        output += self.command('conf t', '(config)')
+        output += self.command('interface %s' % interface, '(config-if)')
+        output += self.command('power inline auto', '(config-if)')
+        return output
 
     def poe_off(self, interface):
-        self.command('conf t', '(config)')
-        self.command('interface %s' % interface, '(config-if)')
-        self.command('power inline never', '(config-if)')
+        output = self.prompt
+        output += self.command('conf t', '(config)')
+        output += self.command('interface %s' % interface, '(config-if)')
+        output += self.command('power inline never', '(config-if)')
+        return output
