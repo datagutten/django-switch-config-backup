@@ -58,3 +58,12 @@ class SwitchCli(ABC):
 
     def login(self, ip, username, password, enable_password):
         raise NotImplementedError
+
+    def poe_off(self, interface):
+        raise NotImplementedError
+
+    def poe_on(self, interface):
+        raise NotImplementedError
+
+    def poe_cycle(self, interface):
+        raise NotImplementedError
