@@ -17,7 +17,7 @@ class SwitchCli(ABC):
         self.connection_type = connection_type
         if connection_type == 'telnet':
             self.connection = self._telnet()
-        elif connection_type == 'ssh':
+        elif connection_type == 'ssh' or connection_type == 'SCP':
             if self._ssh:
                 self.connection = self._ssh()
             else:
