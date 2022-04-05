@@ -72,12 +72,19 @@ class ComwareCLI(common.SwitchCli):
         response = re.sub(rb'\x1b\[16D\s+\x1b\[16D', b'', response)
         return response
 
-    def enable_scp(self):
+    def system_view(self):
+        if self.prompt[0] == '[':
+            return  # Already in system-view
+
         try:
-            self.command('system-view', ']')
+            output = self.command('system-view', ']')
         except InvalidCommand:
             self.enable_cmd()
-            self.command('system-view', ']')
+            output = self.command('system-view', ']')
+        self.prompt = get_prompt(output)
+
+    def enable_scp(self):
+        self.system_view()
         print('Enabling SFTP server')
         try:
             self.command('sftp server enable', 'SFTP server has been enabled.')
@@ -112,20 +119,22 @@ class ComwareCLI(common.SwitchCli):
     def ntp_server(self, address):
         return self.command('ntp-service unicast-peer %s' % address)
 
-    def poe_off(self, interface):
+    def poe_off(self, interface) -> str:
+        self.system_view()
         output = self.prompt
         response = self.command('interface %s' % interface, 'Ethernet')
-        output += response
+        output += response.decode()
         self.prompt = get_prompt(response)
         output += self.command('undo poe enable')
         return output
 
-    def poe_on(self, interface):
+    def poe_on(self, interface) -> str:
+        self.system_view()
         output = self.prompt
         interface = normalize_interface(interface)
         if interface not in self.prompt:
             response = self.command('interface %s' % interface, 'Ethernet')
-            output += response
+            output += response.decode()
             self.prompt = get_prompt(response)
         output += self.command('poe enable')
         return output
