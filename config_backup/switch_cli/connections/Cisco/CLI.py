@@ -90,16 +90,24 @@ class CiscoCLI(SwitchCli):
         output += self.command('write memory', 'Building configuration')
         return output
 
-    def poe_on(self, interface):
+    def poe_on(self, interface) -> str:
         output = self.prompt
-        output += self.command('conf t', '(config)')
-        output += self.command('interface %s' % interface, '(config-if)')
-        output += self.command('power inline auto', '(config-if)')
+        output += self.command('conf t', '(config)', decode=True)
+        output += self.command('interface %s' % interface, '(config-if)', decode=True)
+        output += self.command('power inline auto', '(config-if)', decode=True)
         return output
 
-    def poe_off(self, interface):
+    def poe_off(self, interface) -> str:
         output = self.prompt
-        output += self.command('conf t', '(config)')
-        output += self.command('interface %s' % interface, '(config-if)')
-        output += self.command('power inline never', '(config-if)')
+        output += self.command('conf t', '(config)', decode=True)
+        output += self.command('interface %s' % interface, '(config-if)', decode=True)
+        output += self.command('power inline never', '(config-if)', decode=True)
+        return output
+
+    def poe_cycle(self, interface) -> str:
+        output = self.prompt
+        output += self.command('conf t', '(config)', decode=True)
+        output += self.command('interface %s' % interface, '(config-if)', decode=True)
+        output += self.command('power inline never', '(config-if)', decode=True)
+        output += self.command('power inline auto', '(config-if)', decode=True)
         return output
