@@ -7,7 +7,7 @@ import config_backup.exceptions
 from config_backup import backup
 from config_backup.ConfigBackup import backup_options
 from config_backup.git import Git
-from switch_cli.connections.exceptions import CLIException
+from config_backup.switch_cli.connections.exceptions import CLIException
 
 now = datetime.datetime.now()
 
