@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import OperationalError, models
 from switchinfo.models import Switch
 
 connection_types = [['SSH', 'SSH'], ['Telnet', 'Telnet'], ['SCP', 'SCP'], ['SFTP', 'SFTP']]
@@ -17,10 +17,12 @@ class SwitchBackupOption(models.Model):
 
 
 def switch_types():
-    types = Switch.objects.order_by('type').values('type').distinct()
-    types = types.values_list('type', flat=True)
-
-    return zip(types, types)
+    try:
+        types = Switch.objects.order_by('type').values('type').distinct()
+        types = types.values_list('type', flat=True)
+        return zip(types, types)
+    except OperationalError:
+        return {}
 
 
 class CommonBackupOption(models.Model):
