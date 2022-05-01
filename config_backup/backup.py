@@ -8,7 +8,10 @@ from .ConfigBackup import connect_cli
 from .exceptions import BackupFailed
 from .switch_cli.connections.exceptions import UnexpectedResponse
 
-local_path = settings.BACKUP_PATH
+try:
+    local_path = settings.BACKUP_PATH
+except AttributeError:
+    local_path = None
 
 
 def backup_file(switch):
@@ -17,7 +20,8 @@ def backup_file(switch):
     :param switchinfo.models.Switch switch:
     :return: Backup file name
     """
-    return settings.BACKUP_PATH + '/' + switch.name
+    if local_path:
+        return local_path + '/' + switch.name
 
 
 def has_backup(switch: Switch):
@@ -26,7 +30,7 @@ def has_backup(switch: Switch):
     :param switchinfo.models.Switch switch:
     :return bool:
     """
-    if os.path.exists(backup_file(switch)):
+    if local_path and os.path.exists(backup_file(switch)):
         return True
     else:
         return False
