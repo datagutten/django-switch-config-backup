@@ -10,7 +10,7 @@ class CiscoCLI(SwitchCli):
         super().__init__(connection_type)
 
     def get_prompt(self, output: bytes):
-        matches = re.search(r'(.+[>#])$', output.decode('utf-8'))
+        matches = re.search(r'(.+(?:[>#]|\(config.*?\)))$', output.decode('utf-8'))
         if matches:
             self.prompt = matches.group(1)
         else:
