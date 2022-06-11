@@ -4,6 +4,7 @@ from switchinfo.management.commands import SwitchBaseCommand
 from switchinfo.models import Vlan
 
 from config_backup.ConfigBackup import connect_cli
+from switch_cli.connections.exceptions import CLIException
 
 
 class Command(SwitchBaseCommand):
@@ -30,7 +31,11 @@ class Command(SwitchBaseCommand):
 
         for switch in switches:
             print(switch)
-            cli = connect_cli(switch)
+            try:
+                cli = connect_cli(switch)
+            except CLIException as e:
+                print(e)
+                continue
 
             if vlan_obj not in switch.vlan.all():
                 print('vlan %s is not on switch %s' % (vlan_obj, switch))
