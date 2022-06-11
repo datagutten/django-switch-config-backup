@@ -39,6 +39,7 @@ class ProCurveCLI(common.SwitchCli):
         elif response.find(b'#') == -1:
             print('response bad', response)
             raise UnexpectedResponse('Login prompt not found')
+        self.get_prompt(response)
 
     def save(self):
         print('Saving configuration')

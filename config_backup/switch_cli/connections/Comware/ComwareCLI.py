@@ -38,26 +38,26 @@ class ComwareCLI(common.SwitchCli):
         if not response:
             raise UnexpectedResponse(response)
         if response.find(b'Username:') > -1:
-            self.command(username, b'Password:')
-            self.prompt = self.command(password, '>', decode=False).strip()
-        else:
-            self.prompt = get_prompt(response)
+            self.command(username, b'Password:', update_prompt=False)
+            self.command(password, '>')
+        self.get_prompt(response)
 
     def save(self):
         print('Saving configuration')
-        self.command('save', 'Are you sure')
-        self.command('Y', 'Please input the file name')
-        self.command('\n', 'overwrite')
+        self.command('save', 'Are you sure', update_prompt=False)
+        self.command('Y', 'Please input the file name', update_prompt=False)
+        self.command('\n', 'overwrite', update_prompt=False)
         self.command('Y', 'Configuration is saved to device successfully.', timeout=10)
 
     def backup(self):
-        self.connection.read()
         try:
-            response = self.command('display current-configuration', '---- More ----')
+            response = self.command('display current-configuration', '---- More ----',
+                                    update_prompt=False)
         except UnexpectedResponse as e:
             if e.payload.find(b'Unrecognized command found') > -1:
                 self.enable_cmd()
-                response = self.command('display current-configuration', '---- More ----')
+                response = self.command('display current-configuration', '---- More ----',
+                                        update_prompt=False)
             else:
                 raise e
 
@@ -65,8 +65,8 @@ class ComwareCLI(common.SwitchCli):
             'display current-configuration')
         response = response[start:]
 
-        while response.find(self.prompt) == -1:
-            response += self.command(' ', read_until='---- More ----')
+        while response.decode('utf-8').find(self.prompt) == -1:
+            response += self.command(' ', read_until='---- More ----', update_prompt=False)
 
         response = response.replace(b'  ---- More ----', b'')
         response = re.sub(rb'\x1b\[42D\s+\x1b\[42D', b'', response)
@@ -108,9 +108,9 @@ class ComwareCLI(common.SwitchCli):
         self.save()
 
     def enable_cmd(self):
-        self.command('_cmdline-mode on', 'All commands can be displayed and executed')
-        self.command('Y', 'Please input password:')
-        # print('Password prompt: ', response2.decode('utf-8'))
+        self.command('_cmdline-mode on', 'All commands can be displayed and executed',
+                     update_prompt=False)
+        self.command('Y', 'Please input password:', update_prompt=False)
         response = self.command('512900', self.prompt)
         if response.find(b'Unrecognized command found') > -1:
             raise UnexpectedResponse('Invalid password response: "%s"' % response.decode('utf-8'),

@@ -37,18 +37,19 @@ class CiscoCLI(SwitchCli):
                 raise UnexpectedResponse('Unexpected initial output', output)
 
         if self.prompt[-1] == '>':
-            self.command(b'enable', b'Password:')
+            self.command(b'enable', b'Password:', update_prompt=False)
             output = self.command(enable_password, b'#')
 
         self.get_prompt(output)
 
     def backup(self):
         print('Show running config')
-        response = self.command('show running-config', read_until=b'--More--', timeout=5)
+        response = self.command('show running-config', read_until=b'--More--', timeout=5,
+                                update_prompt=False)
 
         while response.decode('utf-8').find(self.prompt) == -1:
             print('More')
-            response += self.command(' ', read_until=b'--More--', timeout=5)
+            response += self.command(' ', read_until=b'--More--', timeout=5, update_prompt=False)
             # response += self.connection.read()
             print('%d bytes' % len(response))
             # print('Last 10:', response[-10:])
