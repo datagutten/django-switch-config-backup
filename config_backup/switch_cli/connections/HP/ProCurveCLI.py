@@ -44,9 +44,11 @@ class ProCurveCLI(common.SwitchCli):
     def save(self):
         return self.command('write memory', '(config)#', timeout=10)
 
-    def configure(self):
+    def configure(self) -> bytes:
         if not re.search(r'\((?:config|[a-z]+-.+?)\)', self.prompt):
             return self.command('configure', '(config)#')
+        else:
+            return b''
 
     def enable_scp(self):
         self.configure()

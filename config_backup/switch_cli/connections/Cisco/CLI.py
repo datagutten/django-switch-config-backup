@@ -49,9 +49,11 @@ class CiscoCLI(SwitchCli):
 
         return self.command(command, '[OK]', timeout=15, update_prompt=False)
 
-    def configure(self):
+    def configure(self) -> bytes:
         if self.prompt.find('(config') == -1:
             return self.command('conf t', '(config)')
+        else:
+            return b''
 
     def backup(self):
         print('Show running config')

@@ -49,9 +49,9 @@ class ComwareCLI(common.SwitchCli):
         output += self.command('Y', 'Configuration is saved to device successfully.', timeout=10)
         return output
 
-    def system_view(self):
+    def system_view(self) -> bytes:
         if self.prompt[0] == '[':
-            return  # Already in system-view
+            return b''  # Already in system-view
 
         try:
             return self.command('system-view', ']')
