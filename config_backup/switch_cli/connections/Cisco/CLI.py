@@ -44,16 +44,15 @@ class CiscoCLI(SwitchCli):
     def backup(self):
         print('Show running config')
         response = self.command('show running-config', read_until=b'--More--', timeout=5)
-        print('Prompt', self.prompt)
 
         while response.decode('utf-8').find(self.prompt) == -1:
             print('More')
             response += self.command(' ', read_until=b'--More--', timeout=5)
             # response += self.connection.read()
             print('%d bytes' % len(response))
-            print('Last 10:', response[-10:])
-            print('Last', response[-1:1])
-            print('Prompt find', response.decode('utf-8').find(self.prompt))
+            # print('Last 10:', response[-10:])
+            # print('Last', response[-1:1])
+            # print('Prompt find', response.decode('utf-8').find(self.prompt))
 
         response = re.sub(rb'\s--More--\s\x08+\s+\x08+', b'', response)
         response = response.replace(b'\r', b'')
@@ -72,13 +71,12 @@ class CiscoCLI(SwitchCli):
             if not matches:
                 raise BackupFailed(response.strip())
             else:
-                print(response.strip())
+                return response.strip()
         except UnexpectedResponse as e:
             if e.payload.strip() == '':
                 from time import sleep
                 sleep(3)
             else:
-                print(ord(e.payload.strip()[0]))
                 raise e
 
     def enable_scp(self):
