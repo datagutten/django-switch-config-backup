@@ -50,6 +50,16 @@ class ProCurveCLI(common.SwitchCli):
         else:
             return b''
 
+    def _configure_interface(self, interface: str) -> bytes:
+        output = self.configure()
+        output += self.command('interface %s' % interface, '(eth-%s)' % interface)
+        return output
+
+    def _configure_vlan(self, vlan: int) -> bytes:
+        output = self.configure()
+        output += self.command('vlan %s' % vlan, '(vlan-%d)' % vlan)
+        return output
+
     def enable_scp(self):
         self.configure()
         if not self.connection_type == 'SSH':

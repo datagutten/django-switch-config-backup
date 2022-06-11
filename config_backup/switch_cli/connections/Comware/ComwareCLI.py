@@ -60,6 +60,17 @@ class ComwareCLI(common.SwitchCli):
             output += self.command('system-view', ']')
             return output
 
+    def _configure_interface(self, interface: str) -> bytes:
+        output = self.system_view()
+        interface = normalize_interface(interface)
+        output += self.command('interface %s' % interface, 'Ethernet')
+        return output
+
+    def _configure_vlan(self, vlan: int) -> bytes:
+        output = self.system_view()
+        output += self.command('vlan %s' % vlan, 'vlan-%d]' % vlan)
+        return output
+
     def backup(self):
         try:
             response = self.command('display current-configuration', '---- More ----',
