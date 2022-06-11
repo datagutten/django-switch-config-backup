@@ -78,6 +78,9 @@ def backup(switch, connection_type, username, password, enable_password=None):
                 scp = SCPClient(t)
                 scp.get(remote_file, local_file)
 
+            if not os.path.exists(local_file):
+                raise BackupFailed('Switch did not upload config to %s' % local_file)
+
         except Exception as e:
             if str(e) == '':
                 raise BackupFailed(str(type(e)))
