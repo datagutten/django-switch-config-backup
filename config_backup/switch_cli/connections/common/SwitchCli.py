@@ -69,6 +69,12 @@ class SwitchCli(ABC):
     def login(self, ip, username, password, enable_password):
         raise NotImplementedError
 
+    def save(self) -> bytes:
+        """
+        Save running configuration to flash
+        """
+        raise NotImplementedError()
+
     def backup(self) -> bytes:
         """
         Get running config from CLI

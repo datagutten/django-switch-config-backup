@@ -42,8 +42,7 @@ class ProCurveCLI(common.SwitchCli):
         self.get_prompt(response)
 
     def save(self):
-        print('Saving configuration')
-        self.command('write memory', '(config)#', timeout=10)
+        return self.command('write memory', '(config)#', timeout=10)
 
     def enable_scp(self):
         self.command('configure', '(config)#')

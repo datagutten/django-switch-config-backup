@@ -42,6 +42,13 @@ class CiscoCLI(SwitchCli):
 
         self.get_prompt(output)
 
+    def save(self):
+        command = 'write memory'
+        if self.prompt.find('(config') > -1:
+            command = 'do %s' % command
+
+        return self.command(command, '[OK]', timeout=15, update_prompt=False)
+
     def backup(self):
         print('Show running config')
         response = self.command('show running-config', read_until=b'--More--', timeout=5,
@@ -86,7 +93,7 @@ class CiscoCLI(SwitchCli):
         output += self.command('aaa authorization exec default local', '(config)#')
         output += self.command('ip scp server enable', '(config)#')
         output += self.command('exit', '#')
-        output += self.command('write memory', 'Building configuration')
+        output += self.save()
         return output
 
     def poe_on(self, interface) -> str:

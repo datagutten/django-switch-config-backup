@@ -43,11 +43,11 @@ class ComwareCLI(common.SwitchCli):
         self.get_prompt(response)
 
     def save(self):
-        print('Saving configuration')
-        self.command('save', 'Are you sure', update_prompt=False)
-        self.command('Y', 'Please input the file name', update_prompt=False)
-        self.command('\n', 'overwrite', update_prompt=False)
-        self.command('Y', 'Configuration is saved to device successfully.', timeout=10)
+        output = self.command('save', 'Are you sure', update_prompt=False)
+        output += self.command('Y', 'Please input the file name', update_prompt=False)
+        output += self.command('\n', 'overwrite', update_prompt=False)
+        output += self.command('Y', 'Configuration is saved to device successfully.', timeout=10)
+        return output
 
     def backup(self):
         try:
