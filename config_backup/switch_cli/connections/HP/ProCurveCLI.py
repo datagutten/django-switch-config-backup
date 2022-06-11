@@ -1,7 +1,7 @@
 import re
 
 from config_backup.switch_cli.connections import common
-from config_backup.switch_cli.connections.exceptions import UnexpectedResponse
+from config_backup.switch_cli.connections.exceptions import CLIConnectionError, UnexpectedResponse
 
 
 class ProCurveCLI(common.SwitchCli):
@@ -28,17 +28,15 @@ class ProCurveCLI(common.SwitchCli):
             raise UnexpectedResponse('Logged in as operator')
 
         if response.find(b'Username:') > -1:
-            print('Username prompt')
-            self.command(username, b'Password:')
+            self.command(username, b'Password:', update_prompt=False)
             try:
                 self.command(password, '#')
             except UnexpectedResponse as e:
-                if e.payload.find(b'Invalid password') > -1:
-                    e.message = 'Invalid password'
-                raise e
+                if e.payload.find(b'Invalid password') > -1 or e.payload.find(
+                        b'Authentication failed') > -1:
+                    raise CLIConnectionError('Authentication failed')
         elif response.find(b'#') == -1:
-            print('response bad', response)
-            raise UnexpectedResponse('Login prompt not found')
+            raise UnexpectedResponse('Login prompt not found', response)
         self.get_prompt(response)
 
     def save(self):
