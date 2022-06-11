@@ -27,7 +27,11 @@ class SwitchCli(ABC):
         else:
             raise Exception('Invalid CLI connection type: %s' % connection_type)
 
-    def command(self, command, expected_response=None, read_until=None, timeout=2, decode=False):
+    def get_prompt(self, output: bytes):
+        raise NotImplementedError()
+
+    def command(self, command, expected_response=None, read_until=None, timeout=2,
+                decode=False, update_prompt=True):
         if type(command) == str:
             command = command.encode('utf-8')
         if type(expected_response) == str:
@@ -50,6 +54,12 @@ class SwitchCli(ABC):
                     response.decode('utf-8'),
                     expected_response),
                 response)
+
+        if update_prompt:
+            try:
+                self.get_prompt(response)
+            except NotImplementedError:
+                pass
 
         if decode:
             return response.decode('utf-8')

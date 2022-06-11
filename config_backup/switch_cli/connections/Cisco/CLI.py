@@ -5,15 +5,16 @@ from ..common import SwitchCli
 from ..exceptions import UnexpectedResponse
 
 
-def get_prompt(output: bytes):
-    matches = re.search(r'(.+[>#])$', output.decode('utf-8'))
-    if matches:
-        return matches.group(1)
-
-
 class CiscoCLI(SwitchCli):
     def __init__(self, connection_type='telnet'):
         super().__init__(connection_type)
+
+    def get_prompt(self, output: bytes):
+        matches = re.search(r'(.+[>#])$', output.decode('utf-8'))
+        if matches:
+            self.prompt = matches.group(1)
+        else:
+            raise UnexpectedResponse('Unable to find prompt', output)
 
     def login(self, ip, username, password, enable_password):
         self.connection.connect(ip, username, password)
@@ -31,7 +32,7 @@ class CiscoCLI(SwitchCli):
                 if e.payload.find(b'#') == -1:
                     raise e
         else:
-            self.prompt = get_prompt(output)
+            self.get_prompt(output)
             if not self.prompt:
                 raise UnexpectedResponse('Unexpected initial output', output)
 
@@ -39,7 +40,7 @@ class CiscoCLI(SwitchCli):
             self.command(b'enable', b'Password:')
             output = self.command(enable_password, b'#')
 
-        self.prompt = get_prompt(output)
+        self.get_prompt(output)
 
     def backup(self):
         print('Show running config')

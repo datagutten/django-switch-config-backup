@@ -4,13 +4,6 @@ from config_backup.switch_cli.connections import common
 from config_backup.switch_cli.connections.exceptions import InvalidCommand, UnexpectedResponse
 
 
-def get_prompt(response: bytes):
-    matches = re.search(r'([<\[].+[>\]])', response.decode('utf-8'))
-    if not matches:
-        raise UnexpectedResponse('Unable to find prompt in "%s"' % response.decode('utf-8'))
-    return matches.group(1)
-
-
 def normalize_interface(interface: str):
     matches = re.search(r'(\w+Ethernet)\s?([0-9/]+)', interface)
     if not matches:
@@ -19,10 +12,18 @@ def normalize_interface(interface: str):
 
 
 class ComwareCLI(common.SwitchCli):
+    def get_prompt(self, response: bytes):
+        matches = re.search(r'([<\[].+[>\]])', response.decode('utf-8'))
+        if not matches:
+            raise UnexpectedResponse('Unable to find prompt in "%s"' % response.decode('utf-8'),
+                                     response)
+        self.prompt = matches.group(1)
+
     def command(self, command: str, expected_response=None, read_until=None, timeout=2,
-                decode=False):
+                decode=False, update_prompt=True):
         try:
-            return super().command(command, expected_response, read_until, timeout, decode)
+            return super().command(command, expected_response, read_until, timeout,
+                                   decode, update_prompt)
         except UnexpectedResponse as e:
             if e.payload.find(b'Unrecognized command found') > -1:
                 raise InvalidCommand('Unrecognized command: "%s"' % command,
@@ -77,11 +78,10 @@ class ComwareCLI(common.SwitchCli):
             return  # Already in system-view
 
         try:
-            output = self.command('system-view', ']')
+            self.command('system-view', ']')
         except InvalidCommand:
             self.enable_cmd()
-            output = self.command('system-view', ']')
-        self.prompt = get_prompt(output)
+            self.command('system-view', ']')
 
     def enable_scp(self):
         self.system_view()
@@ -124,7 +124,6 @@ class ComwareCLI(common.SwitchCli):
         output = self.prompt
         response = self.command('interface %s' % interface, 'Ethernet')
         output += response.decode()
-        self.prompt = get_prompt(response)
         output += self.command('undo poe enable')
         return output
 
@@ -135,6 +134,5 @@ class ComwareCLI(common.SwitchCli):
         if interface not in self.prompt:
             response = self.command('interface %s' % interface, 'Ethernet')
             output += response.decode()
-            self.prompt = get_prompt(response)
         output += self.command('poe enable')
         return output

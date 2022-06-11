@@ -1,8 +1,17 @@
+import re
+
 from config_backup.switch_cli.connections import common
 from config_backup.switch_cli.connections.exceptions import UnexpectedResponse
 
 
 class ProCurveCLI(common.SwitchCli):
+    def get_prompt(self, output: bytes):
+        matches = re.search(r'.+;1H(.+[>#])', output.decode('utf-8'))
+        if matches:
+            self.prompt = matches.group(1)
+        else:
+            raise UnexpectedResponse('Unable to find prompt')
+
     def login(self, ip, username, password, enable_password):
         self.connection.connect(ip, username, password)
 
