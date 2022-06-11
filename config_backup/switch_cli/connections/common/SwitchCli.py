@@ -90,6 +90,21 @@ class SwitchCli(ABC):
         """
         raise NotImplementedError
 
+    def enable_scp(self) -> bytes:
+        """
+        Enable SCP server
+        :return: CLI output
+        """
+        raise NotImplementedError
+
+    def set_hostname(self, hostname: str) -> bytes:
+        """
+        Set switch hostname
+        :param hostname: Hostname
+        :return: CLI output
+        """
+        raise NotImplementedError
+
     def poe_off(self, interface) -> bytes:
         raise NotImplementedError
 
