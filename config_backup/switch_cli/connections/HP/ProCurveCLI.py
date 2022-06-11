@@ -44,8 +44,12 @@ class ProCurveCLI(common.SwitchCli):
     def save(self):
         return self.command('write memory', '(config)#', timeout=10)
 
+    def configure(self):
+        if not re.search(r'\((?:config|[a-z]+-.+?)\)', self.prompt):
+            return self.command('configure', '(config)#')
+
     def enable_scp(self):
-        self.command('configure', '(config)#')
+        self.configure()
         if not self.connection_type == 'SSH':
             print('Enabling SSH')
             self.command('ip ssh', '(config)#')
@@ -54,7 +58,6 @@ class ProCurveCLI(common.SwitchCli):
         self.save()
 
     def set_hostname(self, hostname: str):
-        self.command('configure', '(config)#')
+        self.configure()
         self.command('hostname %s' % hostname, '(config)#')
-        # TODO: Update self.prompt with new name
         self.save()

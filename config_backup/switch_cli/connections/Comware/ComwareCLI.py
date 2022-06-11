@@ -49,6 +49,17 @@ class ComwareCLI(common.SwitchCli):
         output += self.command('Y', 'Configuration is saved to device successfully.', timeout=10)
         return output
 
+    def system_view(self):
+        if self.prompt[0] == '[':
+            return  # Already in system-view
+
+        try:
+            return self.command('system-view', ']')
+        except InvalidCommand:
+            output = self.enable_cmd()
+            output += self.command('system-view', ']')
+            return output
+
     def backup(self):
         try:
             response = self.command('display current-configuration', '---- More ----',
@@ -72,16 +83,6 @@ class ComwareCLI(common.SwitchCli):
         response = re.sub(rb'\x1b\[42D\s+\x1b\[42D', b'', response)
         response = re.sub(rb'\x1b\[16D\s+\x1b\[16D', b'', response)
         return response
-
-    def system_view(self):
-        if self.prompt[0] == '[':
-            return  # Already in system-view
-
-        try:
-            self.command('system-view', ']')
-        except InvalidCommand:
-            self.enable_cmd()
-            self.command('system-view', ']')
 
     def enable_scp(self):
         self.system_view()
