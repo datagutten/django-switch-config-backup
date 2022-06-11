@@ -93,10 +93,6 @@ def backup(switch, connection_type, username, password, enable_password=None):
             print(e, e.payload.decode('utf-8'))
             raise e
 
-        if not hasattr(cli, 'backup') and not hasattr(cli, 'backup_copy'):
-            print(type(cli))
-            raise BackupFailed('CLI based backup not supported for %s' % switch.type)
-
         try:
             if not hasattr(settings, 'BACKUP_URL'):
                 raise NotImplementedError('Setting BACKUP_URL is not set')
@@ -106,9 +102,13 @@ def backup(switch, connection_type, username, password, enable_password=None):
             if not os.path.exists(local_file):
                 raise BackupFailed('Switch did not upload config to %s' % local_file)
         except NotImplementedError:
-            config = cli.backup()
-            with open(local_file, 'wb') as fp:
-                fp.write(config)
+            try:
+                config = cli.backup()
+                with open(local_file, 'wb') as fp:
+                    fp.write(config)
+            except NotImplementedError:
+                raise BackupFailed('CLI based backup not supported for %s' % switch.type)
+
     if switch.type == 'Cisco':
         subprocess.run(['sed', '-i', '/ntp clock-period.*/d', local_file])
     return local_file
