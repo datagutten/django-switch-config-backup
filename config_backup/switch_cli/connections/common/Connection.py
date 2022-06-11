@@ -38,7 +38,6 @@ class Connection(ABC):
             if response == b'' and found:
                 break
 
-            print('Wait %d' % count)
             time.sleep(1)
             count += 1
         return response

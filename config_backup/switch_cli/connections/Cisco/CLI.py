@@ -48,10 +48,9 @@ class CiscoCLI(SwitchCli):
                                 update_prompt=False)
 
         while response.decode('utf-8').find(self.prompt) == -1:
-            print('More')
             response += self.command(' ', read_until=b'--More--', timeout=5, update_prompt=False)
             # response += self.connection.read()
-            print('%d bytes' % len(response))
+            print('%d bytes\r' % len(response))
             # print('Last 10:', response[-10:])
             # print('Last', response[-1:1])
             # print('Prompt find', response.decode('utf-8').find(self.prompt))
