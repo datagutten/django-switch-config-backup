@@ -59,6 +59,21 @@ class SwitchCli(ABC):
     def login(self, ip, username, password, enable_password):
         raise NotImplementedError
 
+    def backup(self) -> bytes:
+        """
+        Get running config from CLI
+        :return: Config as bytes
+        """
+        raise NotImplementedError
+
+    def backup_copy(self, url: str) -> bytes:
+        """
+        Copy running config to specified URL
+        :param url: URL to copy config to
+        :return: CLI output
+        """
+        raise NotImplementedError
+
     def poe_off(self, interface):
         raise NotImplementedError
 

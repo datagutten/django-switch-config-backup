@@ -97,13 +97,15 @@ def backup(switch, connection_type, username, password, enable_password=None):
             print(type(cli))
             raise BackupFailed('CLI based backup not supported for %s' % switch.type)
 
-        if hasattr(cli, 'backup_copy') and hasattr(settings, 'BACKUP_URL'):
+        try:
+            if not hasattr(settings, 'BACKUP_URL'):
+                raise NotImplementedError('Setting BACKUP_URL is not set')
             url = '%s/%s' % (settings.BACKUP_URL, switch.name)
-            cli.backup_copy(url)
+            print(cli.backup_copy(url))
 
             if not os.path.exists(local_file):
                 raise BackupFailed('Switch did not upload config to %s' % local_file)
-        elif hasattr(cli, 'backup'):
+        except NotImplementedError:
             config = cli.backup()
             with open(local_file, 'wb') as fp:
                 fp.write(config)
