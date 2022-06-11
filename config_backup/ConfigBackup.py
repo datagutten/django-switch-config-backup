@@ -2,6 +2,7 @@ from switchinfo.models import Switch
 
 from config_backup.exceptions import BackupFailed
 from config_backup.models import CommonBackupOption, SwitchBackupOption
+from config_backup.switch_cli.connections.exceptions import CLIConnectionError
 from config_backup.switch_cli.get_connection import get_cli
 
 
@@ -54,7 +55,7 @@ def connect_cli(switch: Switch):
     cli = get_cli(switch.type)('ssh')
     try:
         cli.login(switch.ip, options.username, options.password, options.enable_password)
-    except (ConnectionError, AttributeError) as e:
+    except (ConnectionError, AttributeError, CLIConnectionError) as e:
         if cli.connection_type == 'ssh':
             print('SSH login failed, trying telnet')
             cli = get_cli(switch.type)('telnet')

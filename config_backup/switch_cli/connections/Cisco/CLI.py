@@ -25,8 +25,8 @@ class CiscoCLI(SwitchCli):
 
         if output.find(b'Password:') > -1:
             try:
-                self.command(password, b'>')
-                self.command(b'enable', b'Password:')
+                self.command(password, b'>', update_prompt=False)
+                self.command(b'enable', b'Password:', update_prompt=False)
                 output = self.command(enable_password, b'#')
             except UnexpectedResponse as e:
                 if e.payload.find(b'#') == -1:
