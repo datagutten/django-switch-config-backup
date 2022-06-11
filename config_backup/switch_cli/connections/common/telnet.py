@@ -2,6 +2,7 @@ import socket
 import telnetlib
 
 from .Connection import Connection
+from ..exceptions import CLIConnectionError
 
 
 class Telnet(Connection):
@@ -13,7 +14,9 @@ class Telnet(Connection):
             print('Connecting to %s using telnet' % ip)
             tn = telnetlib.Telnet(ip, timeout=5)
         except socket.timeout:
-            raise TimeoutError('Timout connecting to %s' % ip)
+            raise CLIConnectionError('Timout connecting to %s' % ip)
+        except OSError as e:
+            raise CLIConnectionError(str(e))
         self.connection = tn
 
     def read(self) -> bytes:
