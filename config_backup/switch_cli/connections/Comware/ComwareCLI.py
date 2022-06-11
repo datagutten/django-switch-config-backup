@@ -68,7 +68,7 @@ class ComwareCLI(common.SwitchCli):
 
     def _configure_vlan(self, vlan: int) -> bytes:
         output = self.system_view()
-        output += self.command('vlan %s' % vlan, 'vlan-%d]' % vlan)
+        output += self.command('vlan %s' % vlan, 'vlan%d]' % vlan)
         return output
 
     def backup(self):
@@ -141,4 +141,19 @@ class ComwareCLI(common.SwitchCli):
     def poe_on(self, interface) -> bytes:
         output = self._configure_interface(interface)
         output += self.command('poe enable')
+        return output
+
+    def vlan_name(self, vlan: int, name: str) -> bytes:
+        output = self._configure_vlan(vlan)
+        output += self.command('name %s' % name, 'vlan%s]' % vlan)
+        return output
+
+    def untagged_vlan(self, interface: str, vlan: int) -> bytes:
+        output = self._configure_interface(interface)
+        output += self.command('port access vlan %d' % vlan)
+        return output
+
+    def tagged_vlan(self, interface: str, vlan: int) -> bytes:
+        output = self._configure_interface(interface)
+        output += self.command('port trunk permit vlan %d' % vlan)
         return output

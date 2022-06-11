@@ -115,3 +115,30 @@ class SwitchCli(ABC):
         output = self.poe_off(interface)
         output += self.poe_on(interface)
         return output.decode('utf8')
+
+    def vlan_name(self, vlan: int, name: str) -> bytes:
+        """
+        Set vlan name and add the vlan to the switch
+        :param vlan: vlan number
+        :param name: vlan name
+        :return: CLI output
+        """
+        raise NotImplementedError()
+
+    def untagged_vlan(self, interface: str, vlan: int):
+        """
+        Set an interface as an access port
+        :param interface: Interface name
+        :param vlan: vlan number
+        :return: CLI output
+        """
+        raise NotImplementedError()
+
+    def tagged_vlan(self, interface: str, vlan: int):
+        """
+        Add a tagged vlan to an interfaces
+        :param interface: Interface name
+        :param vlan: Vlan number
+        :return: CLI output
+        """
+        raise NotImplementedError()

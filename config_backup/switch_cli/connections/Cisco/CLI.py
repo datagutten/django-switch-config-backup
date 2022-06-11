@@ -103,6 +103,23 @@ class CiscoCLI(SwitchCli):
             else:
                 raise e
 
+    def vlan_name(self, vlan: int, name: str) -> bytes:
+        output = self._configure_vlan(vlan)
+        output += self.command('name %s' % name, '(config-vlan)')
+        output += self.command('exit', '(config)')
+        return output
+
+    def untagged_vlan(self, interface: str, vlan: int) -> bytes:
+        output = self._configure_interface(interface)
+        output += self.command('switchport mode access', '(config-if)')
+        output += self.command('switchport access vlan %d' % vlan, '(config-if)')
+        return output
+
+    def tagged_vlan(self, interface: str, vlan: int) -> bytes:
+        output = self._configure_interface(interface)
+        output += self.command('switchport trunk allowed vlan add %d' % vlan, '(config-if)')
+        return output
+
     def enable_scp(self):
         output = self.prompt
         output += self.command('configure terminal', '(config)#')
