@@ -68,7 +68,7 @@ class CiscoCLI(SwitchCli):
                      b'Address or name of remote host', b'?', update_prompt=False)
         self.command(b'\n', b'Destination filename', b'?', update_prompt=False)
         try:
-            response = self.command(b'\n', b'#', decode=True)
+            response = self.command(b'\n', b'#', decode=True, timeout=15)
             matches = re.search(r'([0-9]+) bytes copied', response)
             if not matches:
                 raise BackupFailed(response.strip())
