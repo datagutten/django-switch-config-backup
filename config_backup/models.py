@@ -1,4 +1,4 @@
-from django.db import OperationalError, models
+from django.db import DatabaseError, models
 from switchinfo.models import Switch
 
 connection_types = [['SSH', 'SSH'], ['Telnet', 'Telnet'], ['SCP', 'SCP'], ['SFTP', 'SFTP']]
@@ -21,7 +21,7 @@ def switch_types():
         types = Switch.objects.order_by('type').values('type').distinct()
         types = types.values_list('type', flat=True)
         return zip(types, types)
-    except OperationalError:
+    except DatabaseError:
         return {}
 
 
