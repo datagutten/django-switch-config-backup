@@ -63,8 +63,12 @@ def backup(switch, connection_type, username, password, enable_password=None):
         remote_file = remote_file_name(switch.type)
 
         try:
-            t = paramiko.Transport((switch.ip, 22))
-            t.connect(username=username, password=password)
+            try:
+                t = paramiko.Transport((switch.ip, 22))
+                t.connect(username=username, password=password)
+            except paramiko.ssh_exception.AuthenticationException as e:
+                t = paramiko.Transport((switch.ip, 22))
+                t.connect(username=username, password=enable_password)
 
             if connection_type == 'SFTP':
                 sftp = paramiko.SFTPClient.from_transport(t)
