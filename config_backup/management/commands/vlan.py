@@ -31,7 +31,6 @@ class Command(SwitchBaseCommand):
         for switch in switches:
             print(switch)
             cli = connect_cli(switch)
-            interface_obj = switch.interfaces.get(interface=cmd_options['interface'])
 
             if vlan_obj not in switch.vlan.all():
                 print('vlan %s is not on switch %s' % (vlan_obj, switch))
@@ -46,6 +45,7 @@ class Command(SwitchBaseCommand):
                     print('Vlan %s is already tagged on interface %s' % (vlan_obj, interface))
 
             if mode == 'untagged':
+                interface_obj = switch.interfaces.get(interface=cmd_options['interface'])
                 print(cli.untagged_vlan(interface_obj.interface, vlan_obj.vlan).encode())
 
             cli.save()
