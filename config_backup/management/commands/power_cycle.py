@@ -1,8 +1,9 @@
-from django.core.management.base import BaseCommand  # , CommandError
-from switchinfo.models import Switch
+from django.core.management.base import BaseCommand, CommandError
+from switchinfo.models import Interface, Switch
 
 from config_backup.ConfigBackup import backup_options, connect_cli
-from config_backup.switch_cli.get_connection import get_cli
+from config_backup.switch_cli.connections.common import SwitchCli
+from config_backup.switch_cli.connections.exceptions import CLIConnectionError
 
 
 class Command(BaseCommand):
@@ -11,7 +12,16 @@ class Command(BaseCommand):
         parser.add_argument('interface', nargs=1, type=str)
 
     def handle(self, *args, **cmd_options):
-        switch = Switch.objects.get(name=cmd_options['switch'][0])
+        try:
+            switch = Switch.objects.get(name=cmd_options['switch'][0])
+        except Switch.DoesNotExist:
+            raise CommandError('No switch named %s' % cmd_options['switch'][0])
+        try:
+            interface_obj = switch.interfaces.get(interface=cmd_options['interface'][0])
+        except Interface.DoesNotExist:
+            raise CommandError(
+                'No interface named %s on %s' % (cmd_options['interface'][0], switch))
+
         print(switch)
 
         if not switch:
@@ -22,11 +32,10 @@ class Command(BaseCommand):
         if options is None:
             return
 
-        cli_class = get_cli(switch.type)
-        if not hasattr(cli_class, 'poe_off'):
-            print('Power cycling on %s is not supported' % switch.type)
-            exit()
-
-        cli = connect_cli(switch)
-        cli.poe_off(cmd_options['interface'][0])
-        cli.poe_on(cmd_options['interface'][0])
+        cli: SwitchCli = connect_cli(switch)
+        try:
+            print(cli.poe_cycle(interface_obj.interface))
+        except NotImplementedError:
+            raise CommandError('Power cycling on %s is not supported' % switch.type)
+        except CLIConnectionError as e:
+            raise CommandError(e)

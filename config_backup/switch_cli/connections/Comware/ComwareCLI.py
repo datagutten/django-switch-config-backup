@@ -131,20 +131,12 @@ class ComwareCLI(common.SwitchCli):
     def ntp_server(self, address):
         return self.command('ntp-service unicast-peer %s' % address)
 
-    def poe_off(self, interface) -> str:
-        self.system_view()
-        output = self.prompt
-        response = self.command('interface %s' % interface, 'Ethernet')
-        output += response.decode()
+    def poe_off(self, interface) -> bytes:
+        output = self._configure_interface(interface)
         output += self.command('undo poe enable')
         return output
 
-    def poe_on(self, interface) -> str:
-        self.system_view()
-        output = self.prompt
-        interface = normalize_interface(interface)
-        if interface not in self.prompt:
-            response = self.command('interface %s' % interface, 'Ethernet')
-            output += response.decode()
+    def poe_on(self, interface) -> bytes:
+        output = self._configure_interface(interface)
         output += self.command('poe enable')
         return output

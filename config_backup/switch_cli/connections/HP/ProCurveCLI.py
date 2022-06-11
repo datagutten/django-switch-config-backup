@@ -71,3 +71,13 @@ class ProCurveCLI(common.SwitchCli):
         self.configure()
         self.command('hostname %s' % hostname, '(config)#')
         self.save()
+
+    def poe_off(self, interface) -> bytes:
+        output = self._configure_interface(interface)
+        output += self.command('no power-over-ethernet', ')#')
+        return output
+
+    def poe_on(self, interface) -> bytes:
+        output = self._configure_interface(interface)
+        output += self.command('power-over-ethernet', ')#')
+        return output

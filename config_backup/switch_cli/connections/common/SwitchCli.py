@@ -90,11 +90,13 @@ class SwitchCli(ABC):
         """
         raise NotImplementedError
 
-    def poe_off(self, interface):
+    def poe_off(self, interface) -> bytes:
         raise NotImplementedError
 
-    def poe_on(self, interface):
+    def poe_on(self, interface) -> bytes:
         raise NotImplementedError
 
-    def poe_cycle(self, interface):
-        raise NotImplementedError
+    def poe_cycle(self, interface) -> str:
+        output = self.poe_off(interface)
+        output += self.poe_on(interface)
+        return output.decode('utf8')
