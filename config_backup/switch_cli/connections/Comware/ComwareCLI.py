@@ -119,14 +119,16 @@ class ComwareCLI(common.SwitchCli):
 
         self.save()
 
-    def enable_cmd(self):
-        self.command('_cmdline-mode on', 'All commands can be displayed and executed',
-                     update_prompt=False)
-        self.command('Y', 'Please input password:', update_prompt=False)
+    def enable_cmd(self) -> bytes:
+        output = self.command('_cmdline-mode on', 'All commands can be displayed and executed',
+                              update_prompt=False)
+        output += self.command('Y', 'Please input password:', update_prompt=False)
         response = self.command('512900', self.prompt)
         if response.find(b'Unrecognized command found') > -1:
             raise UnexpectedResponse('Invalid password response: "%s"' % response.decode('utf-8'),
                                      response)
+        output += response
+        return output
 
     def ntp_server(self, address):
         return self.command('ntp-service unicast-peer %s' % address)
