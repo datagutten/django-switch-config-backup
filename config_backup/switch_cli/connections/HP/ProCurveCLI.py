@@ -40,7 +40,7 @@ class ProCurveCLI(common.SwitchCli):
         self.get_prompt(response)
 
     def save(self):
-        return self.command('write memory', '(config)#', timeout=10)
+        return self.command('write memory', self.prompt, timeout=10)
 
     def configure(self) -> bytes:
         if not re.search(r'\((?:config|[a-z]+-.+?)\)', self.prompt):
