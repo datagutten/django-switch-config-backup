@@ -105,13 +105,46 @@ class SwitchCli(ABC):
         """
         raise NotImplementedError
 
+    def syslog(self, server: str, remove=False) -> bytes:
+        """
+        Add or remove a syslog server
+        :param server: Syslog server address
+        :param remove: Remove the syslog server
+        :return: CLI output
+        """
+        raise NotImplementedError()
+
+    def ntp_server(self, server: str, remove=False):
+        """
+        Add or remove an NTP server
+        :param server: NTP server address
+        :param remove: Remove the NTP server
+        :return: CLI output
+        """
+        raise NotImplementedError()
+
     def poe_off(self, interface) -> bytes:
+        """
+        Disable PoE on the given interface
+        :param interface: Interface name
+        :return: CLI output
+        """
         raise NotImplementedError
 
     def poe_on(self, interface) -> bytes:
+        """
+        Enable PoE on the given interface
+        :param interface: Interface name
+        :return: CLI output
+        """
         raise NotImplementedError
 
     def poe_cycle(self, interface) -> str:
+        """
+        Disable and enable PoE on the given interface
+        :param interface: Interface name
+        :return: CLI output
+        """
         output = self.poe_off(interface)
         output += self.poe_on(interface)
         return output.decode('utf8')
