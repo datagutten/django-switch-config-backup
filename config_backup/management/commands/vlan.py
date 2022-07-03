@@ -4,7 +4,7 @@ from switchinfo.management.commands import SwitchBaseCommand
 from switchinfo.models import Vlan
 
 from config_backup.ConfigBackup import connect_cli
-from switch_cli.connections.exceptions import CLIException
+from config_backup.switch_cli.connections.exceptions import CLIException
 
 
 class Command(SwitchBaseCommand):
