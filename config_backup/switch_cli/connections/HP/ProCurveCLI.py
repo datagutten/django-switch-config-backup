@@ -5,6 +5,12 @@ from config_backup.switch_cli.connections.exceptions import CLIConnectionError, 
 
 
 class ProCurveCLI(common.SwitchCli):
+    @staticmethod
+    def strip_control_chars(data: bytes) -> bytes:
+        data = re.sub(rb'\x1b\[24;[0-9]+[A-Z]', b'', data)
+        data = data.replace(b'[?25h', b'')
+        return data
+
     def get_prompt(self, output: bytes):
         matches = re.search(r'.+;1H(.+[>#])', output.decode('utf-8'))
         if matches:

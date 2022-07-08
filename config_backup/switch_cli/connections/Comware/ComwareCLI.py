@@ -12,6 +12,12 @@ def normalize_interface(interface: str):
 
 
 class ComwareCLI(common.SwitchCli):
+    @staticmethod
+    def strip_control_chars(data: bytes) -> bytes:
+        data = re.sub(rb'\x1b\[42D\s+\x1b\[42D', b'', data)
+        data = re.sub(rb'\x1b\[16D\s+\x1b\[16D', b'', data)
+        return data
+
     def get_prompt(self, response: bytes):
         matches = re.search(r'([<\[].+[>\]])', response.decode('utf-8'))
         if not matches:

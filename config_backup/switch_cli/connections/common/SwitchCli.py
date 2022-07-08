@@ -27,6 +27,10 @@ class SwitchCli(ABC):
         else:
             raise Exception('Invalid CLI connection type: %s' % connection_type)
 
+    @staticmethod
+    def strip_control_chars(data: bytes) -> bytes:
+        return data
+
     def get_prompt(self, output: bytes):
         raise NotImplementedError()
 

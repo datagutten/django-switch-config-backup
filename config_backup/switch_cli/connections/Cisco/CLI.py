@@ -9,6 +9,10 @@ class CiscoCLI(SwitchCli):
     def __init__(self, connection_type='telnet'):
         super().__init__(connection_type)
 
+    @staticmethod
+    def strip_control_chars(data: bytes) -> bytes:
+        return data.replace(b'\r', b'')
+
     def get_prompt(self, output: bytes):
         matches = re.search(r'(.+(?:[>#]|\(config.*?\)))$', output.decode('utf-8'))
         if matches:
