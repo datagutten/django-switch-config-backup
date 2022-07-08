@@ -55,7 +55,7 @@ class SwitchCli(ABC):
         if expected_response and response.find(expected_response) == -1:
             raise UnexpectedResponse(
                 'Unexpected response: "%s", expected "%s"' % (
-                    response.decode('utf-8'),
+                    self.strip_control_chars(response).decode('utf-8'),
                     expected_response),
                 response)
 
