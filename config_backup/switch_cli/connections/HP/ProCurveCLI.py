@@ -78,6 +78,29 @@ class ProCurveCLI(common.SwitchCli):
         self.command('hostname %s' % hostname, '(config)#')
         self.save()
 
+    def syslog(self, server: str, remove=False) -> bytes:
+        self.configure()
+        return self.command('logging %s' % server, self.prompt)
+
+    def ntp_server(self, server: str, remove=False):
+        self.configure()
+        priority = 1
+
+        command = 'sntp server priority %d %s' % (priority, server)
+        if remove:
+            command = self._negate(command)
+
+        response = self.command(command, self.prompt)
+        if response.find(b'Invalid input'):
+            command = 'sntp server %s' % server
+            if remove:
+                command = self._negate(command)
+            response = self.command(command, self.prompt)
+
+        response += self.command('timesync sntp', self.prompt)
+        response += self.command('sntp unicast', self.prompt)
+        return response
+
     def poe_off(self, interface) -> bytes:
         output = self._configure_interface(interface)
         output += self.command('no power-over-ethernet', ')#')
