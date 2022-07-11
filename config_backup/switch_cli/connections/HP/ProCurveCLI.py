@@ -25,10 +25,7 @@ class ProCurveCLI(common.SwitchCli):
 
         if response.find(b'Press any key to continue') > -1:
             print('Press any key')
-            if self.connection_type == 'telnet':
-                response = self.command(b'\n', b'Username:')
-            else:
-                response = self.command(b'\n')
+            response = self.command(b'\n', update_prompt=False)
 
         if response.find(b'as operator') > -1:
             raise UnexpectedResponse('Logged in as operator')
