@@ -9,6 +9,11 @@ class ProCurveCLI(common.SwitchCli):
     def strip_control_chars(data: bytes) -> bytes:
         data = re.sub(rb'\x1b\[24;[0-9]+[A-Z]', b'', data)
         data = data.replace(b'[?25h', b'')
+        data = data.replace(b'[1;24r', b'\n')
+        data = data.replace(b'[?25h', b'')
+        data = data.replace(b'\x1b', b'')
+        data = data.replace(b'[2K', b'')
+
         return data
 
     def get_prompt(self, output: bytes):
