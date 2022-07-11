@@ -14,10 +14,10 @@ class SwitchCli(ABC):
     prompt: str
 
     def __init__(self, connection_type='telnet'):
-        self.connection_type = connection_type
+        self.connection_type = connection_type.lower()
         if connection_type == 'telnet':
             self.connection = self._telnet()
-        elif connection_type == 'ssh' or connection_type == 'SCP':
+        elif self.connection_type == 'ssh' or self.connection_type == 'scp':
             if self._ssh:
                 self.connection = self._ssh()
             else:
