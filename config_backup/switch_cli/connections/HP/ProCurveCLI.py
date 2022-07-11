@@ -18,6 +18,10 @@ class ProCurveCLI(common.SwitchCli):
         else:
             raise UnexpectedResponse('Unable to find prompt')
 
+    @staticmethod
+    def _negate(command: str):
+        return 'no %s' % command
+
     def login(self, ip, username, password, enable_password):
         self.connection.connect(ip, username, password)
 
