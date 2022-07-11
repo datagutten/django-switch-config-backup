@@ -136,8 +136,17 @@ class ComwareCLI(common.SwitchCli):
         output += response
         return output
 
-    def ntp_server(self, address):
-        return self.command('ntp-service unicast-peer %s' % address)
+    def syslog(self, server: str, remove=False) -> bytes:
+        command = 'info-center loghost %s' % server
+        if remove:
+            command = 'undo %s' % command
+        return self.command(command)
+
+    def ntp_server(self, server: str, remove=False):
+        command = 'ntp-service unicast-server %s' % server
+        if remove:
+            command = 'undo %s' % command
+        return self.command(command)
 
     def poe_off(self, interface) -> bytes:
         output = self._configure_interface(interface)
