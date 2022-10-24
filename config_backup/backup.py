@@ -4,7 +4,7 @@ import subprocess
 from django.conf import settings
 from switchinfo.models import Switch
 
-from .ConfigBackup import connect_cli
+from .ConfigBackup import connect_cli, connect_http
 from .exceptions import BackupFailed
 from .switch_cli.connections.exceptions import UnexpectedResponse
 
@@ -55,7 +55,7 @@ def remote_file_name(switch_type):
 def backup(switch, connection_type, username, password, enable_password=None):
     print('Backing up %s switch %s using %s' % (switch.type, switch.name, connection_type))
     local_file = backup_file(switch)
-    if connection_type not in ['SCP', 'SFTP', 'Telnet', 'SSH']:
+    if connection_type not in ['SCP', 'SFTP', 'Telnet', 'SSH', 'http']:
         raise BackupFailed('Invalid connection type: %s' % connection_type)
 
     if connection_type == 'SFTP' or connection_type == 'SCP':
@@ -86,6 +86,12 @@ def backup(switch, connection_type, username, password, enable_password=None):
                 raise BackupFailed(str(type(e)))
             else:
                 raise BackupFailed(e)
+    elif connection_type == 'http':
+        http = connect_http(switch)
+        config = http.config()
+        with open(local_file, 'wb') as fp:
+            fp.write(config)
+
     else:  # CLI based backup
         try:
             cli = connect_cli(switch)

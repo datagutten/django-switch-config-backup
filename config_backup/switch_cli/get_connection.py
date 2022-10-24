@@ -9,9 +9,20 @@ cli_classes = {
     'Aruba': connections.HP.ProCurveCLI,
 }
 
+http_classes = {
+    'Aruba CX': connections.ArubaCX.ArubaRest,
+}
+
 
 def get_cli(switch_type):
     if switch_type in cli_classes:
         return cli_classes[switch_type]
     else:
         raise AttributeError('CLI not supported for %s' % switch_type)
+
+
+def get_http(switch_type):
+    if switch_type in http_classes:
+        return http_classes[switch_type]
+    else:
+        raise AttributeError('http(s) not supported for %s' % switch_type)

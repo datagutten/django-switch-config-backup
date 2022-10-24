@@ -2,8 +2,9 @@ from switchinfo.models import Switch
 
 from config_backup.exceptions import BackupFailed
 from config_backup.models import CommonBackupOption, SwitchBackupOption
-from config_backup.switch_cli.connections.exceptions import CLIConnectionError
-from config_backup.switch_cli.get_connection import get_cli
+from config_backup.switch_cli.connections.common import SwitchCli
+from config_backup.switch_cli.connections.exceptions import CLIConnectionError, UnexpectedResponse
+from config_backup.switch_cli.get_connection import get_cli, get_http
 
 
 def backup_options(switch):
@@ -63,3 +64,13 @@ def connect_cli(switch: Switch):
         else:
             raise e
     return cli
+
+
+def connect_http(switch: Switch):
+    options = backup_options(switch)
+    if options is None:
+        print('No backup options found for switch %s' % switch)
+        return
+    http = get_http(switch.type)(switch.ip)
+    http.login(options.username, options.password)
+    return http

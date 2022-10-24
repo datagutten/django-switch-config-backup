@@ -1,7 +1,8 @@
 from django.db import DatabaseError, models
 from switchinfo.models import Switch
 
-connection_types = [['SSH', 'SSH'], ['Telnet', 'Telnet'], ['SCP', 'SCP'], ['SFTP', 'SFTP']]
+connection_types = [['SSH', 'SSH'], ['Telnet', 'Telnet'], ['SCP', 'SCP'], ['SFTP', 'SFTP'],
+                    ['http', 'http(s)']]
 
 
 class SwitchBackupOption(models.Model):
