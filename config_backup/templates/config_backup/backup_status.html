@@ -1,0 +1,26 @@
+{% extends 'switchinfo/base.html' %}
+{% load static %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'switchinfo/switchinfo_fancy.css' %}" type="text/css">
+{% endblock %}
+{% block content %}
+    <table>
+        <tr>
+            <th>Switch</th>
+            <th>Switch type</th>
+            <th>Backup method</th>
+            <th>Last backup</th>
+        </tr>
+        {% for switch in switches %}
+            <tr>
+                <td><a href="{% url 'switchinfo:switch' name=switch.name %}">{{ switch.name }}</a></td>
+                <td>{{ switch.type }}</td>
+                <td>{{ switch.backup_options.connection_type|default:"" }}</td>
+                <td>{% if switch.backup_time %}
+                    <a href="{{ switch.gitlist_url }}">{{ switch.backup_time }}</a>
+                {% endif %}</td>
+            </tr>
+
+        {% endfor %}
+    </table>
+{% endblock %}
