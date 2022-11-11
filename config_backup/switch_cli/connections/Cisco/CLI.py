@@ -14,7 +14,7 @@ class CiscoCLI(SwitchCli):
         return data.replace(b'\r', b'')
 
     def get_prompt(self, output: bytes):
-        matches = re.search(r'(.+(?:[>#]|\(config.*?\)))$', output.decode('utf-8'))
+        matches = re.search(r'(.+(?:[>#]|\(config.*?\)))\s?$', output.decode('utf-8'))
         if matches:
             self.prompt = matches.group(1)
         else:
