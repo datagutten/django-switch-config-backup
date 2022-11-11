@@ -47,6 +47,8 @@ def remote_file_name(switch_type):
         return 'startup.cfg'
     elif switch_type == '3Com':
         return '3comoscfg.cfg'
+    elif switch_type == 'Fortinet':
+        return 'sys_config'
     else:
         raise BackupFailed(
             'File backup not supported for switch type: %s' % switch_type)
