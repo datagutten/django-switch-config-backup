@@ -33,12 +33,20 @@ class CiscoCLI(SwitchCli):
                 self.command(b'enable', b'Password:', update_prompt=False)
                 output = self.command(enable_password, b'#')
             except UnexpectedResponse as e:
-                if e.payload.find(b'#') == -1:
+                if e.payload.find(b'Authentication failed') > -1:
+                    e.message = 'Authentication failed'
                     raise e
+                elif e.payload.find(b'#') == -1:
+                    raise e
+                else:
+                    self.get_prompt(e.payload)
+                    output = e.payload
         else:
-            self.get_prompt(output)
-            if not self.prompt:
-                raise UnexpectedResponse('Unexpected initial output', output)
+            try:
+                self.get_prompt(output)
+            except UnexpectedResponse as e:
+                e.message = 'Unexpected initial output'
+                raise e
 
         if self.prompt[-1] == '>':
             self.command(b'enable', b'Password:', update_prompt=False)
