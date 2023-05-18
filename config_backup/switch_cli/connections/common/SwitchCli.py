@@ -35,7 +35,7 @@ class SwitchCli(ABC):
         raise NotImplementedError()
 
     def command(self, command, expected_response=None, read_until=None, timeout=2,
-                decode=False, update_prompt=True):
+                decode=False, update_prompt=True, negate=False):
         if type(command) == str:
             command = command.encode('utf-8')
         if type(expected_response) == str:
@@ -46,6 +46,8 @@ class SwitchCli(ABC):
         self.connection.set_timeout(timeout)
         if command != b' ' and command != b'\n':
             command += b"\n"
+        if negate:
+            command = b'no %s' % command
 
         if not read_until and expected_response:
             read_until = expected_response
