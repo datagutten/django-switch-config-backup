@@ -48,7 +48,7 @@ def connect(switch: Switch, connection_type=None):
     return cli
 
 
-def connect_cli(switch: Switch):
+def connect_cli(switch: Switch) -> 'SwitchCli':
     options = backup_options(switch)
     if options is None:
         print('No backup options found for switch %s' % switch)
@@ -56,7 +56,7 @@ def connect_cli(switch: Switch):
     cli = get_cli(switch.type)('ssh')
     try:
         cli.login(switch.ip, options.username, options.password, options.enable_password)
-    except (ConnectionError, AttributeError, CLIConnectionError) as e:
+    except (ConnectionError, AttributeError, CLIConnectionError, UnexpectedResponse) as e:
         if cli.connection_type == 'ssh':
             print('SSH login failed, trying telnet')
             cli = get_cli(switch.type)('telnet')
