@@ -11,6 +11,7 @@ cli_classes = {
 
 http_classes = {
     'Aruba CX': connections.ArubaCX.ArubaRest,
+    'Aruba CX REST API': connections.ArubaCX.ArubaRest,
 }
 
 
