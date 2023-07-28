@@ -155,3 +155,10 @@ class CiscoCLI(SwitchCli):
         output = self._configure_interface(interface)
         output += self.command('description %s' % description, '(config-if)')
         return output
+
+    def snmp(self, community='public', permission='RO', remove=False):
+        if permission not in ['RO', 'RW']:
+            raise AttributeError('Permission must be RO or RW')
+        output = self.configure()
+        output += self.command('snmp-server community %s %s' % (community, permission))
+        return output

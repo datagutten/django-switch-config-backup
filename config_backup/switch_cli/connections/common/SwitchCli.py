@@ -184,3 +184,13 @@ class SwitchCli(ABC):
         :return: CLI output
         """
         raise NotImplementedError()
+
+    def snmp(self, community='public', permission='RO', remove=False):
+        """
+        Enable SNMP, set community with permission and optionally access list
+        :param community: SNMP Community
+        :param permission: Permission (RO or RW)
+        :param remove: Remove the community
+        :return:
+        """
+        pass
