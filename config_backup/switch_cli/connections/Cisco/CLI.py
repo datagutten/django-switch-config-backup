@@ -150,3 +150,8 @@ class CiscoCLI(SwitchCli):
         output = self._configure_interface(interface)
         output += self.command('power inline never', '(config-if)')
         return output
+
+    def interface_name(self, interface, description):
+        output = self._configure_interface(interface)
+        output += self.command('description %s' % description, '(config-if)')
+        return output

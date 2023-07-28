@@ -117,6 +117,11 @@ class ProCurveCLI(common.SwitchCli):
         output += self.command('power-over-ethernet', ')#')
         return output
 
+    def interface_name(self, interface: str, description: str):
+        output = self._configure_interface(interface)
+        output += self.command('name "%s"' % description)
+        return output
+
     def vlan_name(self, vlan: int, name: str):
         output = self._configure_vlan(vlan)
         output += self.command('name %s' % name, self.prompt)

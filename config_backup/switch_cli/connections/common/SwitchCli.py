@@ -155,6 +155,9 @@ class SwitchCli(ABC):
         output += self.poe_on(interface)
         return output.decode('utf8')
 
+    def interface_name(self, interface: str, name: str) -> bytes:
+        raise NotImplementedError
+
     def vlan_name(self, vlan: int, name: str) -> bytes:
         """
         Set vlan name and add the vlan to the switch
