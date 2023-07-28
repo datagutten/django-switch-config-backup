@@ -24,6 +24,8 @@ class SSH(Connection):
             raise CLIConnectionError(e)
         except paramiko.ssh_exception.NoValidConnectionsError as e:
             raise CLIConnectionError(e)
+        except TimeoutError as e:
+            raise CLIConnectionError(e)
 
     def set_timeout(self, timeout: int):
         self.timeout = timeout
