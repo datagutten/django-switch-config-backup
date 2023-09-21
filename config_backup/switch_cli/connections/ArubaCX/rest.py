@@ -1,5 +1,5 @@
 import requests
-
+from config_backup import exceptions
 
 class ArubaRest:
     def __init__(self, ip, verify_ssl=False):
@@ -10,11 +10,15 @@ class ArubaRest:
     # def _get(self, uri):
 
     def login(self, username, password):
-        response = self.session.post(self.url + 'login', {
-            'username': username,
-            'password': password
-        })
-        response.raise_for_status()
+        try:
+            response = self.session.post(self.url + 'login', {
+                'username': username,
+                'password': password
+            })
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise exceptions.ConnectionFailed('Failed to connect to REST API at %s' % self.url)
+
 
     def config_json(self, name='running-config') -> str:
         response = self.session.get(self.url + 'fullconfigs/%s' % name)

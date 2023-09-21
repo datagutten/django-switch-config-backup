@@ -25,7 +25,7 @@ class Command(SwitchBaseCommand):
                                            options.username,
                                            options.password,
                                            options.enable_password)
-            except (TimeoutError, ValueError, ConnectionError) as e:
+            except (TimeoutError, ValueError, ConnectionError, config_backup.exceptions.ConnectionFailed) as e:
                 print(e)
                 continue
             except config_backup.exceptions.BackupFailed as e:
