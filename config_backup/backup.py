@@ -37,7 +37,7 @@ def has_backup(switch: Switch):
 
 
 def remote_file_name(switch_type):
-    if switch_type == 'Cisco':
+    if switch_type in ['Cisco', 'Cisco IOS XE']:
         return 'running-config'
     elif switch_type == 'Aruba' or switch_type == 'ProCurve':
         return '/cfg/running-config'

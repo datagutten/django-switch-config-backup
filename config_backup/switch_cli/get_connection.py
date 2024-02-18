@@ -2,6 +2,7 @@ from . import connections
 
 cli_classes = {
     'Cisco': connections.Cisco.CiscoCLI,
+    'Cisco IOS XE': connections.Cisco.CiscoCLI,
     'Comware': connections.Comware.ComwareCLI,
     '3Com': connections.Comware.ComwareCLI,
     'HP': connections.Comware.ComwareCLI,
