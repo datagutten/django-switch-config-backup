@@ -1,4 +1,5 @@
 import datetime
+from subprocess import CalledProcessError
 
 from switchinfo.management.commands import SwitchBaseCommand
 from switchinfo.models import Switch
@@ -36,7 +37,11 @@ class Command(SwitchBaseCommand):
                 continue
 
             backup_success = True
-            git.add(local_file)
+            try:
+                git.add(local_file)
+            except CalledProcessError as e:
+                print(e.stdout)
+                print(e.stderr)
 
         if backup_success:
             git.commit('Backup ' + cmd_options['switch'])
