@@ -1,8 +1,16 @@
 from abc import ABC
 
 from .Connection import Connection
-from .ssh import SSH
-from .telnet import Telnet
+
+try:
+    from .ssh import SSH
+except ImportError:
+    SSH = None
+try:
+    from .telnet import Telnet
+except ImportError:
+    Telnet = None
+
 from ..exceptions import UnexpectedResponse
 
 
