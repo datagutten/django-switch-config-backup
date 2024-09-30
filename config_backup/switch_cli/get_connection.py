@@ -1,6 +1,6 @@
 from typing import Type
 
-from exceptions import ConnectionFailed
+from config_backup.exceptions import ConnectionFailed
 from . import connections
 
 cli_classes = {
