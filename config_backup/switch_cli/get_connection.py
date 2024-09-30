@@ -1,3 +1,6 @@
+from typing import Type
+
+from exceptions import ConnectionFailed
 from . import connections
 
 cli_classes = {
@@ -16,15 +19,15 @@ http_classes = {
 }
 
 
-def get_cli(switch_type):
+def get_cli(switch_type) -> Type[connections.common.SwitchCli]:
     if switch_type in cli_classes:
         return cli_classes[switch_type]
     else:
-        raise AttributeError('CLI not supported for %s' % switch_type)
+        raise ConnectionFailed('CLI not supported for %s' % switch_type)
 
 
 def get_http(switch_type):
     if switch_type in http_classes:
         return http_classes[switch_type]
     else:
-        raise AttributeError('http(s) not supported for %s' % switch_type)
+        raise ConnectionFailed('http(s) not supported for %s' % switch_type)

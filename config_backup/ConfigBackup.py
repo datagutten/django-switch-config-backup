@@ -18,8 +18,7 @@ def backup_options(switch):
     try:
         switch_options = SwitchBackupOption.objects.get(switch=switch)
         if switch_options.exclude:
-            print('%s excluded from backup' % switch)
-            return
+            raise BackupFailed('%s is excluded from backup' % switch)
         if switch_options.username:
             options.username = switch_options.username
         if switch_options.password:
@@ -36,9 +35,6 @@ def backup_options(switch):
 
 def connect(switch: Switch, connection_type=None):
     options = backup_options(switch)
-    if options is None:
-        print('No backup options found for switch %s' % switch)
-        return
     if not connection_type:
         cli = get_cli(switch.type)(options.connection_type)
     else:
@@ -50,9 +46,6 @@ def connect(switch: Switch, connection_type=None):
 
 def connect_cli(switch: Switch) -> 'SwitchCli':
     options = backup_options(switch)
-    if options is None:
-        print('No backup options found for switch %s' % switch)
-        return
     cli = get_cli(switch.type)('ssh')
     try:
         cli.login(switch.ip, options.username, options.password, options.enable_password)
