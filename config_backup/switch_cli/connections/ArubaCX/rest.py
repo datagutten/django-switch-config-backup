@@ -5,7 +5,7 @@ class ArubaRest:
     def __init__(self, ip, verify_ssl=False):
         self.session = requests.Session()
         self.session.verify = verify_ssl
-        self.url = 'https://%s/rest/v1/' % ip
+        self.url = 'https://%s/rest/v10.13/' % ip
 
     # def _get(self, uri):
 
