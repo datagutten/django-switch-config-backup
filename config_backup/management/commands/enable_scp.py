@@ -16,7 +16,7 @@ class Command(SwitchBaseCommand):
                 cli = connect(switch, 'ssh')
             except (ConnectionError, socket.timeout):
                 cli = connect(switch, 'telnet')
-            except AttributeError as e:
+            except Exception as e:
                 print(e)
                 continue
 
