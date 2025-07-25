@@ -1,4 +1,0 @@
-django
-paramiko
-scp
-switchinfo>=1.5

@@ -1,0 +1,19 @@
+[project]
+name = "config-backup"
+version = "0.1.0"
+description = "An extension to switchinfo to backup switch config with version control using git"
+authors = [
+    { name = "Anders Birkenes", email = "datagutten@datagutten.net" }
+]
+readme = "README.md"
+requires-python = ">=3.9,<4.0"
+dependencies = [
+    "netmiko (>=4.6.0,<5.0.0)",
+    "paramiko (>=3.5.1,<4.0.0)",
+    "scp (>=0.15.0,<0.16.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

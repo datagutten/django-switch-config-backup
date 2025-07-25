@@ -1,6 +1,6 @@
 # django-switch-config-backup
 
-A django app to backup switch config
+An extension to switchinfo to backup switch config with version control using git
 
 # Setup
 
