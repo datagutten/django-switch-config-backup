@@ -32,6 +32,15 @@ class Git:
         else:
             raise FileNotFoundError('File not found: ' + file)
 
+    def move(self, source, destination):
+        return subprocess.run(['git',
+                               '--git-dir', self.repo_path + '/.git',
+                               '--work-tree', self.repo_path,
+                               'mv', source, destination],
+                              universal_newlines=True,
+                              capture_output=True,
+                              text=True)
+
     def commit(self, message):
         try:
             return subprocess.run(['git',
