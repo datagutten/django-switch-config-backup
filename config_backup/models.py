@@ -33,7 +33,7 @@ def switch_types():
 
 
 class CommonBackupOption(models.Model):
-    type = models.CharField(max_length=50, choices=switch_types(), unique=True)
+    type = models.CharField(max_length=50, unique=True)
     username = models.CharField(blank=True, null=True, max_length=50)
     password = models.CharField(blank=True, null=True, max_length=50)
     enable_password = models.CharField(blank=True, null=True, max_length=50)
