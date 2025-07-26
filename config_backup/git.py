@@ -17,7 +17,7 @@ class Git:
                    '--work-tree', self.repo_path,
                    'add', file,
                    ]
-            return subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            return subprocess.run(cmd, capture_output=True, text=True)
         else:
             raise FileNotFoundError('File not found: ' + file)
 
@@ -28,20 +28,20 @@ class Git:
                    '--work-tree', self.repo_path,
                    'diff', file,
                    ]
-            return subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            return subprocess.run(cmd, capture_output=True, text=True)
         else:
             raise FileNotFoundError('File not found: ' + file)
 
     def commit(self, message):
         try:
-            return subprocess.check_output(['git',
-                                            '--git-dir', self.repo_path + '/.git',
-                                            '--work-tree', self.repo_path,
-                                            'commit',
-                                            '-m', message],
-                                           universal_newlines=True,
-                                           stderr=subprocess.STDOUT)
-
+            return subprocess.run(['git',
+                                   '--git-dir', self.repo_path + '/.git',
+                                   '--work-tree', self.repo_path,
+                                   'commit',
+                                   '-m', message],
+                                  universal_newlines=True,
+                                  capture_output=True,
+                                  text=True)
         except subprocess.CalledProcessError as e:
             if not e.returncode == 1:
                 raise e
